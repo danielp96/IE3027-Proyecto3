@@ -22,7 +22,7 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/timer.h"
 
-#include "bitmaps.h"
+//#include "bitmaps.h"
 #include "font.h"
 #include "lcd_registers.h"
 
@@ -150,7 +150,7 @@ void LCD_Init(void) {
   LCD_DATA(0x00);
   LCD_DATA(0x01);
   LCD_DATA(0xE0);
-//  LCD_DATA(0x8F);
+  //  LCD_DATA(0x8F);
   LCD_CMD(0x29); //display on 
   LCD_CMD(0x2C); //display on
 
