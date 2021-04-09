@@ -10,8 +10,8 @@
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "TM4C123GH6PM.h"
-#include "inc/hw_ints.h"
+#include <tm4c123gh6pm.h>
+//#include "inc/hw_ints.h"
 #include "inc/hw_memmap.h"
 #include "inc/hw_types.h"
 #include "driverlib/debug.h"
@@ -215,13 +215,13 @@ void LCD_Clear(unsigned int c){
 // Función para dibujar una línea horizontal - parámetros ( coordenada x, cordenada y, longitud, color)
 //*************************************************************************************************************************************** 
 void H_line(unsigned int x, unsigned int y, unsigned int l, unsigned int c) {  
-  unsigned int i, j;
+  unsigned int i;
   LCD_CMD(0x02c); //write_memory_start
   digitalWrite(LCD_RS, HIGH);
   digitalWrite(LCD_CS, LOW);
   l = l + x;
   SetWindows(x, y, l, y);
-  j = l;// * 2;
+  // * 2;
   for (i = 0; i < l; i++) {
       LCD_DATA(c >> 8); 
       LCD_DATA(c); 
@@ -276,9 +276,9 @@ void FillRect(unsigned int x, unsigned int y, unsigned int w, unsigned int h, un
   y2 = y+h;
   SetWindows(x, y, x2-1, y2-1);
   unsigned int k = w*h*2-1;
-  unsigned int i, j;
-  for (int i = 0; i < w; i++) {
-    for (int j = 0; j < h; j++) {
+  
+  for (unsigned int i = 0; i < w; i++) {
+    for (unsigned int j = 0; j < h; j++) {
       LCD_DATA(c >> 8);
       LCD_DATA(c);
       
@@ -309,7 +309,7 @@ void LCD_Print(String text, int x, int y, int fontSize, int color, int backgroun
   Serial.println(cLength,DEC);
   int charDec ;
   int c ;
-  int charHex ;
+  
   char char_array[cLength+1];
   text.toCharArray(char_array, cLength+1) ;
   for (int i = 0; i < cLength ; i++) {
@@ -352,10 +352,10 @@ void LCD_Bitmap(unsigned int x, unsigned int y, unsigned int width, unsigned int
   y2 = y+height;
   SetWindows(x, y, x2-1, y2-1);
   unsigned int k = 0;
-  unsigned int i, j;
+  
 
-  for (int i = 0; i < width; i++) {
-    for (int j = 0; j < height; j++) {
+  for (unsigned int i = 0; i < width; i++) {
+    for (unsigned int j = 0; j < height; j++) {
       LCD_DATA(bitmap[k]);
       LCD_DATA(bitmap[k+1]);
       //LCD_DATA(bitmap[k]);    
