@@ -22,7 +22,7 @@ typedef struct Events
 Event_struct events;
 
 // adjust deadzone as required
-const unsigned int DEAD_ZONE = 200;
+const unsigned int DEAD_ZONE = 250;
 const unsigned int MID_POINT = 2048;
 
 void input_init()
@@ -74,6 +74,27 @@ bool get_event(EventType e)
     }
 }
 
+void hal_debug()
+{
+    Serial.print(" UP: ");
+    Serial.print(get_event(UP));
+    
+    Serial.print(" DOWN: ");
+    Serial.print(get_event(DOWN));
 
+    Serial.print(" LEFT: ");
+    Serial.print(get_event(LEFT));
+
+    Serial.print(" RIGHT: ");
+    Serial.print(get_event(RIGHT));
+
+    Serial.print(" SW1: ");
+    Serial.print(get_event(SW1));
+
+    Serial.print(" SW2: ");
+    Serial.print(get_event(SW2));
+
+    Serial.println("");
+}
 
 #endif // __HARDWARE_ABSTRACTION_LAYER__
