@@ -437,11 +437,11 @@ void LCD_Sprite(unsigned int x, unsigned int y, unsigned int width, unsigned int
     int ancho = ((width*columns));
     if(flip)
     {
-        for (int j = 0; j < height; j++)
+        for (unsigned int j = 0; j < height; j++)
         {
             k = (j*(ancho) + index*width -1 - offset)*2;
             k = k+width*2;
-            for (int i = 0; i < width; i++)
+            for (unsigned int i = 0; i < width; i++)
             {
                 LCD_DATA(bitmap[k]);
                 LCD_DATA(bitmap[k+1]);
@@ -451,10 +451,10 @@ void LCD_Sprite(unsigned int x, unsigned int y, unsigned int width, unsigned int
     }
     else
     {
-        for (int j = 0; j < height; j++)
+        for (unsigned int j = 0; j < height; j++)
         {
             k = (j*(ancho) + index*width + 1 + offset)*2;
-            for (int i = 0; i < width; i++)
+            for (unsigned int i = 0; i < width; i++)
             {
                 LCD_DATA(bitmap[k]);
                 LCD_DATA(bitmap[k+1]);

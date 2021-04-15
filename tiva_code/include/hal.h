@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-enum EventType {UP, DOWN, LEFT,  RIGHT, SW1, SW2};
+enum EventType {UP_E, DOWN_E, LEFT_E, RIGHT_E, SW1_E, SW2_E};
 
 typedef struct Events
 {
@@ -53,22 +53,22 @@ bool get_event(EventType e)
 {
     switch (e)
     {
-        case UP:
+        case UP_E:
             return events.UP;
 
-        case DOWN:
+        case DOWN_E:
             return events.DOWN;
 
-        case LEFT:
+        case LEFT_E:
             return events.LEFT;
 
-        case RIGHT:
+        case RIGHT_E:
             return events.RIGHT;
 
-        case SW1:
+        case SW1_E:
             return events.SW1;
 
-        case SW2:
+        case SW2_E:
             return events.SW2;
 
     }
@@ -78,22 +78,22 @@ bool get_event(EventType e)
 void hal_debug()
 {
     Serial.print(" UP: ");
-    Serial.print(get_event(UP));
+    Serial.print(events.UP);
     
     Serial.print(" DOWN: ");
-    Serial.print(get_event(DOWN));
+    Serial.print(events.DOWN);
 
     Serial.print(" LEFT: ");
-    Serial.print(get_event(LEFT));
+    Serial.print(events.LEFT);
 
     Serial.print(" RIGHT: ");
-    Serial.print(get_event(RIGHT));
+    Serial.print(events.RIGHT);
 
     Serial.print(" SW1: ");
-    Serial.print(get_event(SW1));
+    Serial.print(events.SW1);
 
     Serial.print(" SW2: ");
-    Serial.print(get_event(SW2));
+    Serial.print(events.SW2);
 
     Serial.println("");
 }
