@@ -340,65 +340,129 @@ void LCD_Print(String text, int x, int y, int fontSize, int color, int backgroun
   }
 }
 //***************************************************************************************************************************************
-// Función para dibujar una imagen a partir de un arreglo de colores (Bitmap) Formato (Color 16bit R 5bits G 6bits B 5bits)
+// Función para dibujar una imagen a partir de un arreglo de colores (Bitmap) Formato (Color 16bit R 5bits G 6bits B 5bits), x_flip y y_flip para espejar
 //***************************************************************************************************************************************
-void LCD_Bitmap(unsigned int x, unsigned int y, unsigned int width, unsigned int height, unsigned char bitmap[]){  
-  LCD_CMD(0x02c); // write_memory_start
-  digitalWrite(LCD_RS, HIGH);
-  digitalWrite(LCD_CS, LOW); 
+void LCD_Bitmap(unsigned int x, unsigned int y, unsigned int width, unsigned int height, unsigned char bitmap[], bool x_flip, bool y_flip)
+{  
+    LCD_CMD(0x02c); // write_memory_start
+    digitalWrite(LCD_RS, HIGH);
+    digitalWrite(LCD_CS, LOW); 
   
-  unsigned int x2, y2;
-  x2 = x+width;
-  y2 = y+height;
-  SetWindows(x, y, x2-1, y2-1);
-  unsigned int k = 0;
-  
+    unsigned int x2, y2;
+    x2 = x+width;
+    y2 = y+height;
+    SetWindows(x, y, x2-1, y2-1);
+    unsigned int k = 0;
 
-  for (unsigned int i = 0; i < width; i++) {
-    for (unsigned int j = 0; j < height; j++) {
-      LCD_DATA(bitmap[k]);
-      LCD_DATA(bitmap[k+1]);
-      //LCD_DATA(bitmap[k]);    
-      k = k + 2;
-     } 
-  }
-  digitalWrite(LCD_CS, HIGH);
+    if (!x_flip && !y_flip)
+    {
+        for (unsigned int i = 0; i < width; i++)
+        {
+            for (unsigned int j = 0; j < height; j++)
+            {
+                LCD_DATA(bitmap[k]);
+                LCD_DATA(bitmap[k+1]);
+                //LCD_DATA(bitmap[k]);    
+                k = k + 2;
+            } 
+        }
+    }
+
+    if (x_flip && !y_flip)
+    {
+        for (unsigned int i = 0; i < width; i++)
+        {
+            k = (i*width-1)*2;
+            k = k+width*2;
+            for (unsigned int j = 0; j < height; j++)
+            {
+                LCD_DATA(bitmap[k]);
+                LCD_DATA(bitmap[k+1]);
+                //LCD_DATA(bitmap[k]);    
+                k = k - 2;
+            } 
+        }
+    }
+
+    if (!x_flip && y_flip)
+    {
+        for (unsigned int i = 0; i < width; i++)
+        {
+            k = ((height-1)*(width))*2;
+            k = k - i*(width)*2;
+
+            for (unsigned int j = 0; j < height; j++)
+            {
+                LCD_DATA(bitmap[k]);
+                LCD_DATA(bitmap[k+1]);
+                //LCD_DATA(bitmap[k]);    
+                k = k + 2;
+            } 
+        }
+    }
+
+    if (x_flip && y_flip)
+    {
+        k = (width)*(height)*2-2;
+        for (unsigned int i = 0; i < width; i++)
+        {
+            for (unsigned int j = 0; j < height; j++)
+            {
+                LCD_DATA(bitmap[k]);
+                LCD_DATA(bitmap[k+1]);
+                //LCD_DATA(bitmap[k]);    
+                k = k - 2;
+            } 
+        }
+    }
+
+    digitalWrite(LCD_CS, HIGH);
 }
+
 //***************************************************************************************************************************************
 // Función para dibujar una imagen sprite - los parámetros columns = número de imagenes en el sprite, index = cual desplegar, flip = darle vuelta
 //***************************************************************************************************************************************
-void LCD_Sprite(int x, int y, int width, int height, unsigned char bitmap[],int columns, int index, char flip, char offset){
-  LCD_CMD(0x02c); // write_memory_start
-  digitalWrite(LCD_RS, HIGH);
-  digitalWrite(LCD_CS, LOW); 
+void LCD_Sprite(unsigned int x, unsigned int y, unsigned int width, unsigned int height, unsigned char bitmap[], unsigned int columns, unsigned int index, char flip, char offset)
+{
+    LCD_CMD(0x02c); // write_memory_start
+    digitalWrite(LCD_RS, HIGH);
+    digitalWrite(LCD_CS, LOW); 
 
-  unsigned int x2, y2;
-  x2 =   x+width;
-  y2=    y+height;
-  SetWindows(x, y, x2-1, y2-1);
-  int k = 0;
-  int ancho = ((width*columns));
-  if(flip){
-  for (int j = 0; j < height; j++){
-      k = (j*(ancho) + index*width -1 - offset)*2;
-      k = k+width*2;
-     for (int i = 0; i < width; i++){
-      LCD_DATA(bitmap[k]);
-      LCD_DATA(bitmap[k+1]);
-      k = k - 2;
-     } 
-  }
-  }else{
-     for (int j = 0; j < height; j++){
-      k = (j*(ancho) + index*width + 1 + offset)*2;
-     for (int i = 0; i < width; i++){
-      LCD_DATA(bitmap[k]);
-      LCD_DATA(bitmap[k+1]);
-      k = k + 2;
-     } 
-  }
-    
-    
+    unsigned int x2, y2;
+    x2 =   x+width;
+    y2=    y+height;
+    SetWindows(x, y, x2-1, y2-1);
+    int k = 0;
+
+    int ancho = ((width*columns));
+    if(flip)
+    {
+        for (int j = 0; j < height; j++)
+        {
+            k = (j*(ancho) + index*width -1 - offset)*2;
+            k = k+width*2;
+            for (int i = 0; i < width; i++)
+            {
+                LCD_DATA(bitmap[k]);
+                LCD_DATA(bitmap[k+1]);
+                k = k - 2;
+            } 
+        }
     }
-  digitalWrite(LCD_CS, HIGH);
+    else
+    {
+        for (int j = 0; j < height; j++)
+        {
+            k = (j*(ancho) + index*width + 1 + offset)*2;
+            for (int i = 0; i < width; i++)
+            {
+                LCD_DATA(bitmap[k]);
+                LCD_DATA(bitmap[k+1]);
+                k = k + 2;
+            } 
+        }
+    }
+
+    digitalWrite(LCD_CS, HIGH);
 }
+

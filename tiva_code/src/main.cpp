@@ -23,6 +23,7 @@ extern tImage blinky_right_1;
 extern tImage  clyde_right_1;
 extern tImage   inky_right_1;
 extern tImage  pinky_right_1;
+extern tImage  test;
 
 game_object pacman;
 game_object blinky;
@@ -60,7 +61,7 @@ void setup(void)
     LCD_Init();
     LCD_Clear(0x00);
   
-    game_object_init(&pacman, 100, 100, &pacman_right_1);
+    game_object_init(&pacman, 100, 100, &pacman_right_1); // should be pacman
     game_object_init(&blinky, 150, 100, &blinky_right_1);
     game_object_init(&clyde , 100, 150,  &clyde_right_1);
     game_object_init(&inky  , 150, 150,   &inky_right_1);
@@ -121,5 +122,5 @@ void render(game_object* self)
         return;
     }
 
-    LCD_Bitmap(self->x, self->y, self->sprite->w, self->sprite->h, (uint8_t*)self->sprite->data);
+    LCD_Bitmap(self->x, self->y, self->sprite->w, self->sprite->h, (uint8_t*)self->sprite->data, false, false);
 }
