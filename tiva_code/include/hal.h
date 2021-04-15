@@ -74,6 +74,7 @@ bool get_event(EventType e)
     }
 }
 
+// Extra slow
 void hal_debug()
 {
     Serial.print(" UP: ");

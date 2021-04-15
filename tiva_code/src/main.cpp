@@ -9,6 +9,8 @@
 #include "hal.h"
 #include "game_object.h"
 
+#define LCD_WIDTH  320
+#define LCD_HEIGHT 240
 
 //File dir;
 File file;
@@ -72,17 +74,7 @@ void setup(void)
     
     //LCD_Bitmap(50, 50, 100, 100, mario);
     //LCD_Bitmap(0, 0, 320, 240, fondo);
-  
-    //for(int x = 0; x <319; x++)
-    //{
-    //  LCD_Bitmap(x, 52, 16, 16, tile2);
-    //  LCD_Bitmap(x, 68, 16, 16, tile);
-    
-    //  LCD_Bitmap(x, 207, 16, 16, tile);
-    //  LCD_Bitmap(x, 223, 16, 16, tile);
-    //  x += 15;
-    //}
-  
+
 }
 
 void loop(void)
@@ -93,22 +85,22 @@ void loop(void)
 
     if (get_event(UP))
     {
-        game_object_add_y(&pacman, -1);
+        game_object_add_y(&pacman, -1, LCD_HEIGHT, 0);
     }
 
     if (get_event(DOWN))
     {
-        game_object_add_y(&pacman, 1);
+        game_object_add_y(&pacman, 1, LCD_HEIGHT, 0);
     }
 
     if (get_event(LEFT))
     {
-        game_object_add_x(&pacman, -1);
+        game_object_add_x(&pacman, -1, LCD_WIDTH, 0);
     }
 
     if (get_event(RIGHT))
     {
-        game_object_add_x(&pacman, 1);
+        game_object_add_x(&pacman, 1, LCD_WIDTH, 0);
     }
 
     render_game();

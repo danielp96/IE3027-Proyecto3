@@ -35,38 +35,38 @@ void game_object_init(game_object* object, uint16_t x, uint16_t y, tImage* sprit
     object->hidden = false;
 }
 
-void game_object_add_x(game_object* object, int8_t x)
+void game_object_add_x(game_object* object, int8_t x, uint16_t max, uint16_t min)
 {
     int temp = object->x + x;
 
-    if (temp > (320 - object->w))
+    if (temp > (max - object->w))
     {
-        object->x = 320 - object->w;
+        object->x = max - object->w;
         return;
     }
 
-    if (temp < 0)
+    if (temp < min)
     {
-        object->x = 0;
+        object->x = min;
         return;
     }
 
     object->x = temp;
 }
 
-void game_object_add_y(game_object* object, int8_t y)
+void game_object_add_y(game_object* object, int8_t y, uint16_t max, uint16_t min)
 {
     int temp = object->y + y;
 
-    if (temp > (240 - object->w))
+    if (temp > (max - object->w))
     {
-        object->y = 240 - object->w;
+        object->y = max - object->w;
         return;
     }
 
-    if (temp < 0)
+    if (temp < min)
     {
-        object->y = 0;
+        object->y = min;
         return;
     }
 
