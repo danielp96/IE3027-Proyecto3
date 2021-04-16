@@ -6,23 +6,27 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-enum EventType {UP_E, DOWN_E, LEFT_E, RIGHT_E, SW1_E, SW2_E};
+enum EventType {UP_1, DOWN_1, LEFT_1, RIGHT_1, SW1, SW2, UP_2, DOWN_2, LEFT_2, RIGHT_2};
 
 typedef struct Events
 {
-    bool UP;
-    bool DOWN;
-    bool LEFT;
-    bool RIGHT;
+    bool UP_1;
+    bool DOWN_1;
+    bool LEFT_1;
+    bool RIGHT_1;
     bool SW1;
     bool SW2;
+    bool UP_2;
+    bool DOWN_2;
+    bool LEFT_2;
+    bool RIGHT_2;
 
 } Event_struct;
 
 Event_struct events;
 
 // adjust deadzone as required
-const unsigned int DEAD_ZONE = 250;
+const unsigned int DEAD_ZONE = 300;
 const unsigned int MID_POINT = 2048;
 
 void input_init()
@@ -31,6 +35,9 @@ void input_init()
     pinMode(PF_0, INPUT_PULLUP);
     pinMode(A0, INPUT);
     pinMode(A1, INPUT);
+
+    pinMode(A8, INPUT);
+    pinMode(A9, INPUT);
 }
 
 void read_inputs()
@@ -38,14 +45,24 @@ void read_inputs()
     events.SW1 = !digitalRead(PF_4);
     events.SW2 = !digitalRead(PF_0);
 
-    unsigned int temp_y = analogRead(A0);
-    unsigned int temp_x = analogRead(A1);
+    unsigned int temp_y1 = analogRead(A0);
+    unsigned int temp_x1 = analogRead(A1);
 
-    events.DOWN = temp_y > (MID_POINT + DEAD_ZONE);
-    events.UP   = temp_y < (MID_POINT - DEAD_ZONE);
+    unsigned int temp_y2 = analogRead(A8);
+    unsigned int temp_x2 = analogRead(A9);
 
-    events.RIGHT = temp_x > (MID_POINT + DEAD_ZONE);
-    events.LEFT  = temp_x < (MID_POINT - DEAD_ZONE);
+    events.DOWN_1 = temp_y1 > (MID_POINT + DEAD_ZONE);
+    events.UP_1   = temp_y1 < (MID_POINT - DEAD_ZONE);
+
+    events.RIGHT_1 = temp_x1 > (MID_POINT + DEAD_ZONE);
+    events.LEFT_1  = temp_x1 < (MID_POINT - DEAD_ZONE);
+
+
+    events.DOWN_2 = temp_y2 > (MID_POINT + DEAD_ZONE);
+    events.UP_2   = temp_y2 < (MID_POINT - DEAD_ZONE);
+
+    events.RIGHT_2 = temp_x2 > (MID_POINT + DEAD_ZONE);
+    events.LEFT_2  = temp_x2 < (MID_POINT - DEAD_ZONE);
 
 }
 
@@ -53,47 +70,73 @@ bool get_event(EventType e)
 {
     switch (e)
     {
-        case UP_E:
-            return events.UP;
+        case UP_1:
+            return events.UP_1;
 
-        case DOWN_E:
-            return events.DOWN;
+        case DOWN_1:
+            return events.DOWN_1;
 
-        case LEFT_E:
-            return events.LEFT;
+        case LEFT_1:
+            return events.LEFT_1;
 
-        case RIGHT_E:
-            return events.RIGHT;
+        case RIGHT_1:
+            return events.RIGHT_1;
 
-        case SW1_E:
+        case SW1:
             return events.SW1;
 
-        case SW2_E:
+        case SW2:
             return events.SW2;
 
+        case UP_2:
+            return events.UP_2;
+
+        case DOWN_2:
+            return events.DOWN_2;
+
+        case LEFT_2:
+            return events.LEFT_2;
+
+        case RIGHT_2:
+            return events.RIGHT_2;
+
+        default:
+            return false;
     }
 }
 
 // Extra slow
 void hal_debug()
 {
-    Serial.print(" UP: ");
-    Serial.print(events.UP);
+    Serial.print(" UP_1: ");
+    Serial.print(events.UP_1);
     
-    Serial.print(" DOWN: ");
-    Serial.print(events.DOWN);
+    Serial.print(" DOWN_1: ");
+    Serial.print(events.DOWN_1);
 
-    Serial.print(" LEFT: ");
-    Serial.print(events.LEFT);
+    Serial.print(" LEFT_1: ");
+    Serial.print(events.LEFT_1);
 
-    Serial.print(" RIGHT: ");
-    Serial.print(events.RIGHT);
+    Serial.print(" RIGHT_1: ");
+    Serial.print(events.RIGHT_1);
 
     Serial.print(" SW1: ");
     Serial.print(events.SW1);
 
     Serial.print(" SW2: ");
     Serial.print(events.SW2);
+
+    Serial.print(" UP_2: ");
+    Serial.print(events.UP_2);
+    
+    Serial.print(" DOWN_2: ");
+    Serial.print(events.DOWN_2);
+
+    Serial.print(" LEFT_2: ");
+    Serial.print(events.LEFT_2);
+
+    Serial.print(" RIGHT_2: ");
+    Serial.print(events.RIGHT_2);
 
     Serial.println("");
 }

@@ -126,6 +126,29 @@ void game_object_direction(game_object* self, Direction d)
     self->direction = d;
 }
 
+void game_object_move(game_object* self, Direction d, uint16_t max, uint16_t min)
+{
+    game_object_direction(self, d);
+    switch (d)
+    {
+        case UP:
+            game_object_add_y(self, -1, max, min);
+            break;
+
+        case DOWN:
+            game_object_add_y(self, 1, max, min);
+            break;
+
+        case LEFT:
+            game_object_add_x(self, -1, max, min);
+            break;
+
+        case RIGHT:
+            game_object_add_x(self, 1, max, min);
+            break;
+    }
+}
+
 void game_object_update_index(game_object* self)
 {
     SpriteID tempID = SIDE1;
