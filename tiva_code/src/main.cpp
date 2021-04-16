@@ -120,28 +120,28 @@ void loop(void)
 
     //hal_debug();
 
-    if (get_event(UP_E))
+    if (get_event(UP_1))
     {
         game_object_add_y(&pacman, -1, LCD_HEIGHT, 0);
         game_object_direction(&pacman, UP);
         game_object_direction(&blinky, UP);
     }
 
-    if (get_event(DOWN_E))
+    if (get_event(DOWN_1))
     {
         game_object_add_y(&pacman, 1, LCD_HEIGHT, 0);
         game_object_direction(&pacman, DOWN);
         game_object_direction(&blinky, DOWN);
     }
 
-    if (get_event(LEFT_E))
+    if (get_event(LEFT_1))
     {
         game_object_add_x(&pacman, -1, LCD_WIDTH, 0);
         game_object_direction(&pacman, LEFT);
         game_object_direction(&blinky, LEFT);
     }
 
-    if (get_event(RIGHT_E))
+    if (get_event(RIGHT_1))
     {
         game_object_add_x(&pacman, 1, LCD_WIDTH, 0);
         game_object_direction(&pacman, RIGHT);
