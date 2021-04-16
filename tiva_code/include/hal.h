@@ -99,6 +99,9 @@ bool get_event(EventType e)
 
         case RIGHT_2:
             return events.RIGHT_2;
+
+        default:
+            return false;
     }
 }
 
