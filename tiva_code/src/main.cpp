@@ -98,7 +98,7 @@ void setup(void)
     LCD_Init();
     LCD_Clear(0x00);
   
-    game_object_init(&pacman, 44, 4, pacman_sprites);
+    game_object_init(&pacman, 68, 204, pacman_sprites);
     game_object_init(&blinky, 150, 100, blinky_sprites);
     game_object_init(&clyde , 100, 150,  clyde_sprites);
     game_object_init(&inky  , 150, 150,   inky_sprites);
@@ -106,7 +106,7 @@ void setup(void)
 
     map1_init();
 
-    game_object_set_node(&pacman, map1_nodes[1]);
+    game_object_set_node(&pacman, map1_nodes[58]);
 
     //FillRect(0, 0, 319, 206, 0x421b);
     //String text1 = "Pacman!";
@@ -116,81 +116,8 @@ void setup(void)
     
     //LCD_Bitmap(50, 50, 100, 100, mario);
     //LCD_Bitmap(0, 0, 320, 240, fondo);
-
-}
-
-void loop(void)
-{
-    read_inputs();
-
-    //hal_debug();
-
-    if (get_event(UP_1))
-    {
-        game_object_move(&pacman, UP);
-
-        if (pacman.y == pacman.node->up->y)
-        {
-            game_object_set_node(&pacman, pacman.node->up);
-        }
-
-        game_object_direction(&blinky, UP);
-    }
-
-    if (get_event(DOWN_1))
-    {
-        game_object_move(&pacman, DOWN);
-
-        if (pacman.y == pacman.node->down->y)
-        {
-            game_object_set_node(&pacman, pacman.node->down);
-        }
-
-        game_object_direction(&blinky, DOWN);
-    }
-
-    if (get_event(LEFT_1))
-    {
-        game_object_move(&pacman, LEFT);
-
-        if (pacman.x == pacman.node->left->x)
-        {
-            game_object_set_node(&pacman, pacman.node->left);
-        }
-
-        game_object_direction(&blinky, LEFT);
-    }
-
-    if (get_event(RIGHT_1))
-    {
-        game_object_move(&pacman, RIGHT);
-
-        if (pacman.x == pacman.node->right->x)
-        {
-            game_object_set_node(&pacman, pacman.node->right);
-        }
-        
-        game_object_direction(&blinky, RIGHT);
-
-    }
-
-    delay(5);
-
-    game_object_update_index(&pacman);
-    game_object_update_index(&blinky);
-
-    render_game();
-}
-
-void render_game(void)
-{
-    for (int i = 0; i<5; i++)
-    {
-        render(object_list[i]);
-    }
-
     // DEBUG
-    for (int i = 0; i<16; i++)
+    for (int i = 0; i<68; i++)
     {
         Node* n = map1_nodes[i];
         FillRect(n->x, n->y, 2, 2, 0xFFFF);
@@ -215,6 +142,57 @@ void render_game(void)
             H_line(n->x, n->y, n->right->x - n->x, 0xFFFF);
         }
     } // end debug
+
+}
+
+void loop(void)
+{
+    read_inputs();
+
+    //hal_debug();
+
+    if (get_event(UP_1))
+    {
+        game_object_move(&pacman, UP);
+
+        game_object_direction(&blinky, UP);
+    }
+
+    if (get_event(DOWN_1))
+    {
+        game_object_move(&pacman, DOWN);
+
+        game_object_direction(&blinky, DOWN);
+    }
+
+    if (get_event(LEFT_1))
+    {
+        game_object_move(&pacman, LEFT);
+
+        game_object_direction(&blinky, LEFT);
+    }
+
+    if (get_event(RIGHT_1))
+    {
+        game_object_move(&pacman, RIGHT);
+        
+        game_object_direction(&blinky, RIGHT);
+    }
+
+    delay(5);
+
+    game_object_update_index(&pacman);
+    game_object_update_index(&blinky);
+
+    render_game();
+}
+
+void render_game(void)
+{
+    for (int i = 0; i<5; i++)
+    {
+        render(object_list[i]);
+    }
 }
 
 void render(game_object* self)

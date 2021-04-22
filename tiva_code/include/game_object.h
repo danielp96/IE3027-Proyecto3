@@ -56,8 +56,8 @@ void game_object_init(game_object* self, uint16_t x, uint16_t y, tImage* sprite_
     self->x = x;
     self->y = y;
 
-    self->enable_x = false;
-    self->enable_y = false;
+    self->enable_x = true;
+    self->enable_y = true;
 
     self->w = sprite_list[0]->w;
     self->h = sprite_list[0]->h;
@@ -136,27 +136,117 @@ void game_object_direction(game_object* self, Direction d)
     self->direction = d;
 }
 
+bool game_object_is_on_node(game_object* self)
+{
+    return (self->x == self->node->x) && (self->y == self->node->y);
+}
+
+void game_object_set_node(game_object* self, Node* n)
+{
+    self->node = n;
+
+    self->enable_x = true;
+    self->enable_y = true;
+
+    if (n->up != NULL)
+    {
+        self->min_y = n->up->y;
+    }
+    else
+    {
+        self->min_y = n->y;
+    }
+
+    if (n->down != NULL)
+    {
+        self->max_y = n->down->y + self->h;
+    }
+    else
+    {
+        self->max_y = n->y + self->h;
+    }
+
+
+    if (n->left != NULL)
+    {
+        self->min_x = n->left->x;
+    }
+    else
+    {
+        self->min_x = n->x;
+    }
+
+    if (n->right != NULL)
+    {
+        self->max_x = n->right->x + self->w;
+    }
+    else
+    {
+        self->max_x = n->x + self->w;
+    }
+}
+
 void game_object_move(game_object* self, Direction d)
 {
+    self->enable_x = (self->y == self->node->y);
+
+    self->enable_y = (self->x == self->node->x);
+
     game_object_direction(self, d);
     switch (d)
     {
         case UP:
-            game_object_add_y(self, -1, self->max_y, self->min_y);
+            if (self->enable_y)
+            {
+                game_object_add_y(self, -1, self->max_y, self->min_y);
+
+                if (self->y == self->node->up->y)
+                {
+                    game_object_set_node(self, self->node->up);
+                }
+            }
             break;
 
         case DOWN:
-            game_object_add_y(self, 1, self->max_y, self->min_y);
+            if (self->enable_y)
+            {
+                game_object_add_y(self, 1, self->max_y, self->min_y);
+
+                if (self->y == self->node->down->y)
+                {
+                    game_object_set_node(self, self->node->down);
+                }
+
+            }
             break;
 
         case LEFT:
-            game_object_add_x(self, -1, self->max_x, self->min_x);
+            if (self->enable_x)
+            {
+                game_object_add_x(self, -1, self->max_x, self->min_x);
+
+                if (self->x == self->node->left->x)
+                {
+                    game_object_set_node(self, self->node->left);
+                }
+
+            }
             break;
 
         case RIGHT:
-            game_object_add_x(self, 1, self->max_x, self->min_x);
+            if (self->enable_x)
+            {
+                game_object_add_x(self, 1, self->max_x, self->min_x);
+
+                if (self->x == self->node->right->x)
+                {
+                    game_object_set_node(self, self->node->right);
+                }
+            }
             break;
     }
+
+
 
     // for now this will be here
     self->steps++;
@@ -206,49 +296,6 @@ void game_object_update_index(game_object* self)
     }
 }
 
-void game_object_set_node(game_object* self, Node* n)
-{
-    self->node = n;
 
-    self->enable_x = true;
-    self->enable_y = true;
-
-    if (n->up != NULL)
-    {
-        self->min_y = n->up->y;
-    }
-    else
-    {
-        self->min_y = n->y;
-    }
-
-    if (n->down != NULL)
-    {
-        self->max_y = n->down->y + self->h;
-    }
-    else
-    {
-        self->max_y = n->y + self->h;
-    }
-
-
-    if (n->left != NULL)
-    {
-        self->min_x = n->left->x;
-    }
-    else
-    {
-        self->min_x = n->x;
-    }
-
-    if (n->right != NULL)
-    {
-        self->max_x = n->right->x + self->w;
-    }
-    else
-    {
-        self->max_x = n->x + self->w;
-    }
-}
 
 #endif // __GAME_OBJECT__
