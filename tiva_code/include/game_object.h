@@ -11,7 +11,7 @@
 
 typedef struct
 {
-    const uint8_t *data;
+    uint8_t *data;
     uint16_t w;
     uint16_t h;
 } tImage;

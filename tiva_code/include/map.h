@@ -16,7 +16,7 @@ typedef struct Node
 
 void node_link(Node** map, uint8_t id1, uint8_t id2);
 
-Node* map1_nodes[69];
+Node* map1_nodes[68];
 
 Node* node_new(uint16_t x, uint16_t y)
 {
@@ -199,7 +199,6 @@ void map1_init()
     node_link(map1_nodes, 58, 64);
     node_link(map1_nodes, 50, 63);
     node_link(map1_nodes, 55, 66);
-    // incomplete for now
 
 
     // DEBUG
@@ -210,8 +209,6 @@ void map1_init()
     //Serial.println("");
     //Serial.print(" N0.right: ");
     //Serial.print((uint32_t)(map1_nodes[ 0]->right), HEX);
-
-
 }
 
 void node_link(Node** map, uint8_t id1, uint8_t id2)
@@ -246,6 +243,35 @@ void node_link(Node** map, uint8_t id1, uint8_t id2)
             n1->right = n2;
         }
     }
+}
+
+void map_debug_draw(Node** map)
+{
+    for (int i = 0; i<68; i++)
+    {
+        Node* n = map[i];
+        FillRect(n->x, n->y, 2, 2, 0xFFFF);
+
+        if (n->up != NULL)
+        {
+            V_line(n->up->x, n->up->y, n->y - n->up->y, 0xFFFF);
+        }
+
+        if (n->down != NULL)
+        {
+            V_line(n->x, n->y, n->up->y - n->y, 0xFFFF);
+        }
+
+        if (n->left != NULL)
+        {
+            H_line(n->left->x, n->left->y, n->x - n->left->x, 0xFFFF);
+        }
+
+        if (n->right != NULL)
+        {
+            H_line(n->x, n->y, n->right->x - n->x, 0xFFFF);
+        }
+    } // end debug
 }
 
 #endif // __NODE_MAP__

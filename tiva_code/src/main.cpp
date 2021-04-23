@@ -1,5 +1,7 @@
 #include <Arduino.h>
 
+#include <stdlib.h>
+#include <string.h>
 #include <stdint.h>
 
 #include <ili9341.h>
@@ -12,11 +14,6 @@
 
 #define LCD_WIDTH  320
 #define LCD_HEIGHT 240
-
-//File dir;
-File file;
-
-//char* text;
 
 extern tImage pacman_side_1;
 extern tImage pacman_side_2;
@@ -73,6 +70,8 @@ tImage*  pinky_sprites[] = { &pinky_side_1,  &pinky_side_2,  &pinky_up_1,  &pink
 
 void render(game_object* self);
 void render_game(void);
+void draw_sd_img(char* filename, uint16_t x, uint8_t y);
+
 
 void setup(void)
 {
@@ -80,7 +79,6 @@ void setup(void)
     Serial.begin(9600);
     GPIOPadConfigSet(GPIO_PORTB_BASE, 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7, GPIO_STRENGTH_8MA, GPIO_PIN_TYPE_STD_WPU);
     Serial.println("Inicio");
-
 
     // SD setup
     SPI.setModule(0);
@@ -116,33 +114,39 @@ void setup(void)
     
     //LCD_Bitmap(50, 50, 100, 100, mario);
     //LCD_Bitmap(0, 0, 320, 240, fondo);
-    // DEBUG
-    for (int i = 0; i<68; i++)
-    {
-        Node* n = map1_nodes[i];
-        FillRect(n->x, n->y, 2, 2, 0xFFFF);
 
-        if (n->up != NULL)
-        {
-            V_line(n->up->x, n->up->y, n->y - n->up->y, 0xFFFF);
-        }
-
-        if (n->down != NULL)
-        {
-            V_line(n->x, n->y, n->up->y - n->y, 0xFFFF);
-        }
-
-        if (n->left != NULL)
-        {
-            H_line(n->left->x, n->left->y, n->x - n->left->x, 0xFFFF);
-        }
-
-        if (n->right != NULL)
-        {
-            H_line(n->x, n->y, n->right->x - n->x, 0xFFFF);
-        }
-    } // end debug
-
+    draw_sd_img("map1_1-1.txt",   0,   0);
+    draw_sd_img("map1_1-2.txt",  56,   0);
+    draw_sd_img("map1_1-3.txt", 112,   0);
+    draw_sd_img("map1_1-4.txt", 168,   0);
+    draw_sd_img("map1_2-1.txt",   0,  30);
+    draw_sd_img("map1_2-2.txt",  56,  30);
+    draw_sd_img("map1_2-3.txt", 112,  30);
+    draw_sd_img("map1_2-4.txt", 168,  30);
+    draw_sd_img("map1_3-1.txt",   0,  60);
+    draw_sd_img("map1_3-2.txt",  56,  60);
+    draw_sd_img("map1_3-3.txt", 112,  60);
+    draw_sd_img("map1_3-4.txt", 168,  60);
+    draw_sd_img("map1_4-1.txt",   0,  90);
+    draw_sd_img("map1_4-2.txt",  56,  90);
+    draw_sd_img("map1_4-3.txt", 112,  90);
+    draw_sd_img("map1_4-4.txt", 168,  90);
+    draw_sd_img("map1_5-1.txt",   0, 120);
+    draw_sd_img("map1_5-2.txt",  56, 120);
+    draw_sd_img("map1_5-3.txt", 112, 120);
+    draw_sd_img("map1_5-4.txt", 168, 120);
+    draw_sd_img("map1_6-1.txt",   0, 150);
+    draw_sd_img("map1_6-2.txt",  56, 150);
+    draw_sd_img("map1_6-3.txt", 112, 150);
+    draw_sd_img("map1_6-4.txt", 168, 150);
+    draw_sd_img("map1_7-1.txt",   0, 180);
+    draw_sd_img("map1_7-2.txt",  56, 180);
+    draw_sd_img("map1_7-3.txt", 112, 180);
+    draw_sd_img("map1_7-4.txt", 168, 180);
+    draw_sd_img("map1_8-1.txt",   0, 210);
+    draw_sd_img("map1_8-2.txt",  56, 210);
+    draw_sd_img("map1_8-3.txt", 112, 210);
+    draw_sd_img("map1_8-4.txt", 168, 210);
 }
 
 void loop(void)
@@ -185,6 +189,7 @@ void loop(void)
     game_object_update_index(&blinky);
 
     render_game();
+
 }
 
 void render_game(void)
@@ -208,4 +213,30 @@ void render(game_object* self)
                 temp_sprite->w, temp_sprite->h,
                 (uint8_t*)temp_sprite->data,
                 self->x_flip, self->y_flip);
+}
+
+void draw_sd_img(char* filename, uint16_t x, uint8_t y)
+{
+    File file = SD.open(filename);
+
+    // read file contents
+    char data[file.size()];
+    file.read(data, file.size()+1);
+    file.close();
+
+    const char s1[2] = ",";
+    const char s2[2] = ";";
+
+    uint8_t width = strtoul(strtok(data, s1), NULL, 10);
+    uint8_t height = strtoul(strtok(NULL, s2), NULL, 10);
+
+    uint8_t* temp_data = (uint8_t*)malloc(width*height*2*sizeof(uint8_t));
+
+    for (int i = 0; i<(width*height*2); i++)
+    {
+        temp_data[i] = strtoul(strtok(NULL, s1), NULL, 16);
+    }
+
+    LCD_Bitmap(x, y, width, height, temp_data, false, false);
+    free(temp_data);
 }
