@@ -54,6 +54,9 @@ extern tImage eyes_side;
 extern tImage eyes_up;
 extern tImage eyes_down;
 
+extern tImage blue_1;
+extern tImage blue_2;
+
 extern tImage test;
 
 game_object pacman;
@@ -66,10 +69,10 @@ game_object pinky;
 game_object* object_list[] = {&pacman, &blinky, &clyde, &inky, &pinky};
 
 tImage* pacman_sprites[] = {&pacman_side_1, &pacman_side_2, &pacman_up_1, &pacman_up_2, &pacman_down_1, &pacman_down_2};
-tImage* blinky_sprites[] = {&blinky_side_1, &blinky_side_2, &blinky_up_1, &blinky_up_2, &blinky_down_1, &blinky_down_2, &eyes_side, &eyes_up, &eyes_down};
-tImage*  clyde_sprites[] = { &clyde_side_1,  &clyde_side_2,  &clyde_up_1,  &clyde_up_2,  &clyde_down_1,  &clyde_down_2, &eyes_side, &eyes_up, &eyes_down};
-tImage*   inky_sprites[] = {  &inky_side_1,   &inky_side_2,   &inky_up_1,   &inky_up_2,   &inky_down_1,   &inky_down_2, &eyes_side, &eyes_up, &eyes_down};
-tImage*  pinky_sprites[] = { &pinky_side_1,  &pinky_side_2,  &pinky_up_1,  &pinky_up_2,  &pinky_down_1,  &pinky_down_2, &eyes_side, &eyes_up, &eyes_down};
+tImage* blinky_sprites[] = {&blinky_side_1, &blinky_side_2, &blinky_up_1, &blinky_up_2, &blinky_down_1, &blinky_down_2, &eyes_side, &eyes_up, &eyes_down, &blue_1, &blue_2};
+tImage*  clyde_sprites[] = { &clyde_side_1,  &clyde_side_2,  &clyde_up_1,  &clyde_up_2,  &clyde_down_1,  &clyde_down_2, &eyes_side, &eyes_up, &eyes_down, &blue_1, &blue_2};
+tImage*   inky_sprites[] = {  &inky_side_1,   &inky_side_2,   &inky_up_1,   &inky_up_2,   &inky_down_1,   &inky_down_2, &eyes_side, &eyes_up, &eyes_down, &blue_1, &blue_2};
+tImage*  pinky_sprites[] = { &pinky_side_1,  &pinky_side_2,  &pinky_up_1,  &pinky_up_2,  &pinky_down_1,  &pinky_down_2, &eyes_side, &eyes_up, &eyes_down, &blue_1, &blue_2};
 
 
 void render(game_object* self);
@@ -120,6 +123,7 @@ void setup(void)
     game_object_set_node(&pinky , map1_nodes[0]);
 
     pinky.dead = true;
+    inky.sick = true;
 
     //FillRect(0, 0, 319, 206, 0x421b);
     //String text1 = "Pacman!";

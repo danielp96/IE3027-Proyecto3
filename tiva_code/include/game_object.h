@@ -19,7 +19,7 @@ typedef struct
 #endif // __TIMAGE_STRUCT__
 
 
-enum SpriteID {SIDE1, SIDE2, UP1, UP2, DOWN1, DOWN2, DEAD_SIDE, DEAD_UP, DEAD_DOWN};
+enum SpriteID {SIDE1, SIDE2, UP1, UP2, DOWN1, DOWN2, DEAD_SIDE, DEAD_UP, DEAD_DOWN, SICK1, SICK2};
 enum Direction {UP, DOWN, LEFT, RIGHT};
 
 
@@ -48,6 +48,7 @@ typedef struct
     Node* node;
 
     bool dead;
+    bool sick; // pacman has powerup, ghosts vulnerable to powerup
 
     bool hidden;    
 } game_object;
@@ -270,6 +271,11 @@ void game_object_update_index(game_object* self)
     {
         case UP:
             tempID = self->walk_sprite?UP1:UP2;
+
+            if (self->sick)
+            {
+                tempID = self->walk_sprite?SICK1:SICK2;
+            }
             tempID = self->dead?DEAD_UP:tempID;
             temp_x_flip = false;
             temp_y_flip = false;
@@ -278,6 +284,11 @@ void game_object_update_index(game_object* self)
 
         case DOWN:
             tempID = self->walk_sprite?DOWN1:DOWN2;
+
+            if (self->sick)
+            {
+                tempID = self->walk_sprite?SICK1:SICK2;
+            }
             tempID = self->dead?DEAD_DOWN:tempID;
             temp_x_flip = false;
             temp_y_flip = false;
@@ -286,6 +297,11 @@ void game_object_update_index(game_object* self)
 
         case LEFT:
             tempID = self->walk_sprite?SIDE1:SIDE2;
+
+            if (self->sick)
+            {
+                tempID = self->walk_sprite?SICK1:SICK2;
+            }
             tempID = self->dead?DEAD_SIDE:tempID;
             temp_x_flip = true;
             temp_y_flip = false;
@@ -294,6 +310,11 @@ void game_object_update_index(game_object* self)
 
         case RIGHT:
             tempID = self->walk_sprite?SIDE1:SIDE2;
+
+            if (self->sick)
+            {
+                tempID = self->walk_sprite?SICK1:SICK2;
+            }
             tempID = self->dead?DEAD_SIDE:tempID;
             temp_x_flip = false;
             temp_y_flip = false;
