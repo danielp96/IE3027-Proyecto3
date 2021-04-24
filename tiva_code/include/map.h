@@ -66,9 +66,9 @@ void map1_init()
 
     map1_nodes[27] = node_new(  44, 100);
     map1_nodes[28] = node_new(  68, 100);
-    map1_nodes[29] = node_new(  92, 100);
+    map1_nodes[29] = node_new(  88, 100);
     map1_nodes[30] = node_new( 104, 100);
-    map1_nodes[31] = node_new( 116, 100);
+    map1_nodes[31] = node_new( 120, 100);
     map1_nodes[32] = node_new( 140, 100);
     map1_nodes[33] = node_new( 164, 100);
 

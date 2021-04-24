@@ -91,20 +91,29 @@ void setup(void)
     }
     Serial.println("initialization done.");
 
+    // random setup
+    pinMode(A3, INPUT); // dont connect anything here
+    randomSeed(analogRead(A3));
+
     input_init();
     
     LCD_Init();
     LCD_Clear(0x00);
   
-    game_object_init(&pacman, 68, 204, pacman_sprites);
-    game_object_init(&blinky, 150, 100, blinky_sprites);
-    game_object_init(&clyde , 100, 150,  clyde_sprites);
-    game_object_init(&inky  , 150, 150,   inky_sprites);
-    game_object_init(&pinky , 200, 100,  pinky_sprites);
-
     map1_init();
 
+    game_object_init(&pacman, map1_nodes[58]->x, map1_nodes[58]->y, pacman_sprites);
+    game_object_init(&blinky, map1_nodes[24]->x, map1_nodes[24]->y, blinky_sprites);
+    game_object_init(&clyde , map1_nodes[29]->x, map1_nodes[29]->y,  clyde_sprites);
+    game_object_init(&inky  , map1_nodes[30]->x, map1_nodes[30]->y,   inky_sprites);
+    game_object_init(&pinky , map1_nodes[31]->x, map1_nodes[31]->y,  pinky_sprites);
+
+
     game_object_set_node(&pacman, map1_nodes[58]);
+    game_object_set_node(&blinky, map1_nodes[24]);
+    game_object_set_node(&clyde , map1_nodes[29]);
+    game_object_set_node(&inky  , map1_nodes[30]);
+    game_object_set_node(&pinky , map1_nodes[31]);
 
     //FillRect(0, 0, 319, 206, 0x421b);
     //String text1 = "Pacman!";
@@ -115,38 +124,39 @@ void setup(void)
     //LCD_Bitmap(50, 50, 100, 100, mario);
     //LCD_Bitmap(0, 0, 320, 240, fondo);
 
-    draw_sd_img("map1_1-1.txt",   0,   0);
-    draw_sd_img("map1_1-2.txt",  56,   0);
-    draw_sd_img("map1_1-3.txt", 112,   0);
-    draw_sd_img("map1_1-4.txt", 168,   0);
-    draw_sd_img("map1_2-1.txt",   0,  30);
-    draw_sd_img("map1_2-2.txt",  56,  30);
-    draw_sd_img("map1_2-3.txt", 112,  30);
-    draw_sd_img("map1_2-4.txt", 168,  30);
-    draw_sd_img("map1_3-1.txt",   0,  60);
-    draw_sd_img("map1_3-2.txt",  56,  60);
-    draw_sd_img("map1_3-3.txt", 112,  60);
-    draw_sd_img("map1_3-4.txt", 168,  60);
-    draw_sd_img("map1_4-1.txt",   0,  90);
-    draw_sd_img("map1_4-2.txt",  56,  90);
-    draw_sd_img("map1_4-3.txt", 112,  90);
-    draw_sd_img("map1_4-4.txt", 168,  90);
-    draw_sd_img("map1_5-1.txt",   0, 120);
-    draw_sd_img("map1_5-2.txt",  56, 120);
-    draw_sd_img("map1_5-3.txt", 112, 120);
-    draw_sd_img("map1_5-4.txt", 168, 120);
-    draw_sd_img("map1_6-1.txt",   0, 150);
-    draw_sd_img("map1_6-2.txt",  56, 150);
-    draw_sd_img("map1_6-3.txt", 112, 150);
-    draw_sd_img("map1_6-4.txt", 168, 150);
-    draw_sd_img("map1_7-1.txt",   0, 180);
-    draw_sd_img("map1_7-2.txt",  56, 180);
-    draw_sd_img("map1_7-3.txt", 112, 180);
-    draw_sd_img("map1_7-4.txt", 168, 180);
-    draw_sd_img("map1_8-1.txt",   0, 210);
-    draw_sd_img("map1_8-2.txt",  56, 210);
-    draw_sd_img("map1_8-3.txt", 112, 210);
-    draw_sd_img("map1_8-4.txt", 168, 210);
+    // cast because compiler warning
+    draw_sd_img((char*)"map1_1-1.txt",   0,   0);
+    draw_sd_img((char*)"map1_1-2.txt",  56,   0);
+    draw_sd_img((char*)"map1_1-3.txt", 112,   0);
+    draw_sd_img((char*)"map1_1-4.txt", 168,   0);
+    draw_sd_img((char*)"map1_2-1.txt",   0,  30);
+    draw_sd_img((char*)"map1_2-2.txt",  56,  30);
+    draw_sd_img((char*)"map1_2-3.txt", 112,  30);
+    draw_sd_img((char*)"map1_2-4.txt", 168,  30);
+    draw_sd_img((char*)"map1_3-1.txt",   0,  60);
+    draw_sd_img((char*)"map1_3-2.txt",  56,  60);
+    draw_sd_img((char*)"map1_3-3.txt", 112,  60);
+    draw_sd_img((char*)"map1_3-4.txt", 168,  60);
+    draw_sd_img((char*)"map1_4-1.txt",   0,  90);
+    draw_sd_img((char*)"map1_4-2.txt",  56,  90);
+    draw_sd_img((char*)"map1_4-3.txt", 112,  90);
+    draw_sd_img((char*)"map1_4-4.txt", 168,  90);
+    draw_sd_img((char*)"map1_5-1.txt",   0, 120);
+    draw_sd_img((char*)"map1_5-2.txt",  56, 120);
+    draw_sd_img((char*)"map1_5-3.txt", 112, 120);
+    draw_sd_img((char*)"map1_5-4.txt", 168, 120);
+    draw_sd_img((char*)"map1_6-1.txt",   0, 150);
+    draw_sd_img((char*)"map1_6-2.txt",  56, 150);
+    draw_sd_img((char*)"map1_6-3.txt", 112, 150);
+    draw_sd_img((char*)"map1_6-4.txt", 168, 150);
+    draw_sd_img((char*)"map1_7-1.txt",   0, 180);
+    draw_sd_img((char*)"map1_7-2.txt",  56, 180);
+    draw_sd_img((char*)"map1_7-3.txt", 112, 180);
+    draw_sd_img((char*)"map1_7-4.txt", 168, 180);
+    draw_sd_img((char*)"map1_8-1.txt",   0, 210);
+    draw_sd_img((char*)"map1_8-2.txt",  56, 210);
+    draw_sd_img((char*)"map1_8-3.txt", 112, 210);
+    draw_sd_img((char*)"map1_8-4.txt", 168, 210);
 }
 
 void loop(void)
@@ -224,19 +234,26 @@ void draw_sd_img(char* filename, uint16_t x, uint8_t y)
     file.read(data, file.size()+1);
     file.close();
 
+    // delimiters
     const char s1[2] = ",";
     const char s2[2] = ";";
 
+    // get width and heigth
     uint8_t width = strtoul(strtok(data, s1), NULL, 10);
     uint8_t height = strtoul(strtok(NULL, s2), NULL, 10);
 
+    // reserve space for parsed data
     uint8_t* temp_data = (uint8_t*)malloc(width*height*2*sizeof(uint8_t));
 
+    // parse data
     for (int i = 0; i<(width*height*2); i++)
     {
         temp_data[i] = strtoul(strtok(NULL, s1), NULL, 16);
     }
 
+    // render
     LCD_Bitmap(x, y, width, height, temp_data, false, false);
+
+    // dont forget to free allocated memory
     free(temp_data);
 }
