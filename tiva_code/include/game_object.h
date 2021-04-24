@@ -19,7 +19,7 @@ typedef struct
 #endif // __TIMAGE_STRUCT__
 
 
-enum SpriteID {SIDE1, SIDE2, UP1, UP2, DOWN1, DOWN2};
+enum SpriteID {SIDE1, SIDE2, UP1, UP2, DOWN1, DOWN2, DEAD_SIDE, DEAD_UP, DEAD_DOWN};
 enum Direction {UP, DOWN, LEFT, RIGHT};
 
 
@@ -36,18 +36,20 @@ typedef struct
     bool walk_sprite; // which walking sprite show
     bool x_flip, y_flip;
 
-    tImage** sprite_list; 
+    tImage** sprite_list;
     uint8_t sprite_index;
 
     Direction direction;
     uint8_t steps;
     uint8_t steps_max; // amount of steps before changing sprite
+    uint8_t dead_steps;
+    uint8_t dead_steps_max;
 
     Node* node;
 
-    bool hidden;
+    bool dead;
 
-    
+    bool hidden;    
 } game_object;
 
 
@@ -74,10 +76,13 @@ void game_object_init(game_object* self, uint16_t x, uint16_t y, tImage* sprite_
     self->sprite_index = 0;
 
     self->hidden = false;
+    self->dead = false;
 
     self->direction = RIGHT;
     self->steps = 0;
-    self->steps_max = 5;
+    self->steps_max = 10;
+    self->dead_steps = 0;
+    self->dead_steps_max = 80;
 
     self->node = NULL;
 }
@@ -246,9 +251,6 @@ void game_object_move(game_object* self, Direction d)
             break;
     }
 
-
-
-    // for now this will be here
     self->steps++;
 
     if (self->steps > self->steps_max)
@@ -268,6 +270,7 @@ void game_object_update_index(game_object* self)
     {
         case UP:
             tempID = self->walk_sprite?UP1:UP2;
+            tempID = self->dead?DEAD_UP:tempID;
             temp_x_flip = false;
             temp_y_flip = false;
             game_object_set_sprite(self, tempID, temp_x_flip, temp_y_flip);
@@ -275,6 +278,7 @@ void game_object_update_index(game_object* self)
 
         case DOWN:
             tempID = self->walk_sprite?DOWN1:DOWN2;
+            tempID = self->dead?DEAD_DOWN:tempID;
             temp_x_flip = false;
             temp_y_flip = false;
             game_object_set_sprite(self, tempID, temp_x_flip, temp_y_flip);
@@ -282,6 +286,7 @@ void game_object_update_index(game_object* self)
 
         case LEFT:
             tempID = self->walk_sprite?SIDE1:SIDE2;
+            tempID = self->dead?DEAD_SIDE:tempID;
             temp_x_flip = true;
             temp_y_flip = false;
             game_object_set_sprite(self, tempID, temp_x_flip, temp_y_flip);
@@ -289,6 +294,7 @@ void game_object_update_index(game_object* self)
 
         case RIGHT:
             tempID = self->walk_sprite?SIDE1:SIDE2;
+            tempID = self->dead?DEAD_SIDE:tempID;
             temp_x_flip = false;
             temp_y_flip = false;
             game_object_set_sprite(self, tempID, temp_x_flip, temp_y_flip);
@@ -296,6 +302,134 @@ void game_object_update_index(game_object* self)
     }
 }
 
+// assumes randomseed is set
+void game_object_random_move(game_object* self)
+{
+    if (!game_object_is_on_node(self))
+    {
+        game_object_move(self, self->direction);
+        return;
+    }
+
+    // dont enter the nest when alive
+    if (self->node->value == 1)
+    {
+        if (self->direction == UP)
+        {
+            game_object_move(self, (Direction)(random(2)+2));
+        }
+        else
+        {
+            game_object_move(self, self->direction);
+        }
+
+        return;
+    }
+
+    Direction dir;
+
+    Direction valid_dirs[3];
+
+    switch (self->direction)
+    {
+        case UP:
+            valid_dirs[0] = UP;
+            valid_dirs[1] = LEFT;
+            valid_dirs[2] = RIGHT;
+            break;
+
+        case DOWN:
+            valid_dirs[0] = DOWN;
+            valid_dirs[1] = LEFT;
+            valid_dirs[2] = RIGHT;
+            break;
+            
+        case LEFT:
+            valid_dirs[0] = UP;
+            valid_dirs[1] = DOWN;
+            valid_dirs[2] = LEFT;
+            break;
+            
+        case RIGHT:
+            valid_dirs[0] = UP;
+            valid_dirs[1] = RIGHT;
+            valid_dirs[2] = DOWN;
+            break;
+    }
+
+    dir = valid_dirs[random(3)];
+
+    game_object_move(self, dir);
+}
+
+void game_object_ghost_move(game_object* self)
+{
+    if (!self->dead)
+    {
+        game_object_random_move(self);
+        return;
+    }
+
+    // if not on node, kepp moving
+    if (!game_object_is_on_node(self))
+    {
+        game_object_move(self, self->direction);
+        return;
+    }
+
+    // if not on node and in the nest, move left-right
+    if (self->node->value == 0)
+    {
+        game_object_move(self, (Direction)(random(2)+2));
+        self->dead_steps++;
+
+        // countdown to revive
+        if (self->dead_steps > self->dead_steps_max)
+        {
+            self->dead_steps = 0;
+            self->dead = false;
+        }
+
+        return;
+    }
+
+    Node* dir_list[4];
+
+    dir_list[0] = self->node->up;
+    dir_list[1] = self->node->down;
+    dir_list[2] = self->node->left;
+    dir_list[3] = self->node->right;
+
+    uint8_t min = 255; // higher than any posibble node value
+    Direction dir;
+
+    // search min value
+    for (int i=0; i<4; i++)
+    {
+        if (dir_list[i] != NULL)
+        {
+            if (dir_list[i]->value < min)
+            {
+                min = dir_list[i]->value;
+            }
+        }
+    }
+
+    // get index of min value
+    for (int i=0; i<4; i++)
+    {
+        if (dir_list[i] != NULL)
+        {
+            if (dir_list[i]->value == min)
+            {
+                dir = (Direction)i;
+                break;
+            }
+        }
+    }
+
+    game_object_move(self, dir);
+}
 
 
 #endif // __GAME_OBJECT__

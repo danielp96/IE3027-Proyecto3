@@ -50,6 +50,10 @@ extern tImage pinky_up_2;
 extern tImage pinky_down_1;
 extern tImage pinky_down_2;
 
+extern tImage eyes_side;
+extern tImage eyes_up;
+extern tImage eyes_down;
+
 extern tImage test;
 
 game_object pacman;
@@ -62,10 +66,10 @@ game_object pinky;
 game_object* object_list[] = {&pacman, &blinky, &clyde, &inky, &pinky};
 
 tImage* pacman_sprites[] = {&pacman_side_1, &pacman_side_2, &pacman_up_1, &pacman_up_2, &pacman_down_1, &pacman_down_2};
-tImage* blinky_sprites[] = {&blinky_side_1, &blinky_side_2, &blinky_up_1, &blinky_up_2, &blinky_down_1, &blinky_down_2};
-tImage*  clyde_sprites[] = { &clyde_side_1,  &clyde_side_2,  &clyde_up_1,  &clyde_up_2,  &clyde_down_1,  &clyde_down_2};
-tImage*   inky_sprites[] = {  &inky_side_1,   &inky_side_2,   &inky_up_1,   &inky_up_2,   &inky_down_1,   &inky_down_2};
-tImage*  pinky_sprites[] = { &pinky_side_1,  &pinky_side_2,  &pinky_up_1,  &pinky_up_2,  &pinky_down_1,  &pinky_down_2};
+tImage* blinky_sprites[] = {&blinky_side_1, &blinky_side_2, &blinky_up_1, &blinky_up_2, &blinky_down_1, &blinky_down_2, &eyes_side, &eyes_up, &eyes_down};
+tImage*  clyde_sprites[] = { &clyde_side_1,  &clyde_side_2,  &clyde_up_1,  &clyde_up_2,  &clyde_down_1,  &clyde_down_2, &eyes_side, &eyes_up, &eyes_down};
+tImage*   inky_sprites[] = {  &inky_side_1,   &inky_side_2,   &inky_up_1,   &inky_up_2,   &inky_down_1,   &inky_down_2, &eyes_side, &eyes_up, &eyes_down};
+tImage*  pinky_sprites[] = { &pinky_side_1,  &pinky_side_2,  &pinky_up_1,  &pinky_up_2,  &pinky_down_1,  &pinky_down_2, &eyes_side, &eyes_up, &eyes_down};
 
 
 void render(game_object* self);
@@ -104,16 +108,18 @@ void setup(void)
 
     game_object_init(&pacman, map1_nodes[58]->x, map1_nodes[58]->y, pacman_sprites);
     game_object_init(&blinky, map1_nodes[24]->x, map1_nodes[24]->y, blinky_sprites);
-    game_object_init(&clyde , map1_nodes[29]->x, map1_nodes[29]->y,  clyde_sprites);
-    game_object_init(&inky  , map1_nodes[30]->x, map1_nodes[30]->y,   inky_sprites);
-    game_object_init(&pinky , map1_nodes[31]->x, map1_nodes[31]->y,  pinky_sprites);
+    game_object_init(&clyde , map1_nodes[31]->x, map1_nodes[31]->y,  clyde_sprites);
+    game_object_init(&inky  , map1_nodes[29]->x, map1_nodes[29]->y,   inky_sprites);
+    game_object_init(&pinky , map1_nodes[0]->x, map1_nodes[0]->y,  pinky_sprites);
 
 
     game_object_set_node(&pacman, map1_nodes[58]);
     game_object_set_node(&blinky, map1_nodes[24]);
-    game_object_set_node(&clyde , map1_nodes[29]);
-    game_object_set_node(&inky  , map1_nodes[30]);
-    game_object_set_node(&pinky , map1_nodes[31]);
+    game_object_set_node(&clyde , map1_nodes[31]);
+    game_object_set_node(&inky  , map1_nodes[29]);
+    game_object_set_node(&pinky , map1_nodes[0]);
+
+    pinky.dead = true;
 
     //FillRect(0, 0, 319, 206, 0x421b);
     //String text1 = "Pacman!";
@@ -168,35 +174,35 @@ void loop(void)
     if (get_event(UP_1))
     {
         game_object_move(&pacman, UP);
-
-        game_object_direction(&blinky, UP);
     }
 
     if (get_event(DOWN_1))
     {
         game_object_move(&pacman, DOWN);
-
-        game_object_direction(&blinky, DOWN);
     }
 
     if (get_event(LEFT_1))
     {
         game_object_move(&pacman, LEFT);
-
-        game_object_direction(&blinky, LEFT);
     }
 
     if (get_event(RIGHT_1))
     {
         game_object_move(&pacman, RIGHT);
-        
-        game_object_direction(&blinky, RIGHT);
     }
+
+    game_object_ghost_move(&blinky);
+    game_object_ghost_move(&clyde);
+    game_object_ghost_move(&inky);
+    game_object_ghost_move(&pinky);
 
     delay(5);
 
     game_object_update_index(&pacman);
     game_object_update_index(&blinky);
+    game_object_update_index(&clyde);
+    game_object_update_index(&inky);
+    game_object_update_index(&pinky);
 
     render_game();
 
@@ -257,3 +263,4 @@ void draw_sd_img(char* filename, uint16_t x, uint8_t y)
     // dont forget to free allocated memory
     free(temp_data);
 }
+
