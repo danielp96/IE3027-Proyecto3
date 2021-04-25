@@ -31,6 +31,10 @@ typedef struct
     uint16_t max_x, min_x;
     uint16_t max_y, min_y;
 
+    uint16_t score;
+
+    uint8_t lifes;
+
     bool enable_x, enable_y;
 
     bool walk_sprite; // which walking sprite show
@@ -43,12 +47,15 @@ typedef struct
     uint8_t steps;
     uint8_t steps_max; // amount of steps before changing sprite
     uint8_t dead_steps;
-    uint8_t dead_steps_max;
+    uint8_t dead_steps_max; // amount of steps before reviving
+    uint16_t powerup_steps;
+    uint16_t powerup_steps_max;  // amount of steps before powerup off
 
     Node* node;
 
     bool dead;
-    bool sick; // pacman has powerup, ghosts vulnerable to powerup
+    bool powerup; // pacman has powerup
+    bool sick;    // ghosts vulnerable to powerup
 
     bool hidden;    
 } game_object;
@@ -79,11 +86,19 @@ void game_object_init(game_object* self, uint16_t x, uint16_t y, tImage* sprite_
     self->hidden = false;
     self->dead = false;
 
+    self->sick = false;
+    self->powerup = false;
+
     self->direction = RIGHT;
     self->steps = 0;
     self->steps_max = 10;
     self->dead_steps = 0;
-    self->dead_steps_max = 80;
+    self->dead_steps_max = 60;
+    self->powerup_steps = 0;
+    self->powerup_steps_max = 1000;
+
+    self->score = 0;
+    self->lifes = 3;
 
     self->node = NULL;
 }
@@ -383,6 +398,7 @@ void game_object_random_move(game_object* self)
     game_object_move(self, dir);
 }
 
+// assumes randomseed is set
 void game_object_ghost_move(game_object* self)
 {
     if (!self->dead)
@@ -422,7 +438,7 @@ void game_object_ghost_move(game_object* self)
     dir_list[3] = self->node->right;
 
     uint8_t min = 255; // higher than any posibble node value
-    Direction dir;
+    Direction dir = LEFT;
 
     // search min value
     for (int i=0; i<4; i++)
@@ -450,6 +466,47 @@ void game_object_ghost_move(game_object* self)
     }
 
     game_object_move(self, dir);
+}
+
+void game_object_pacman_move(game_object* self, Direction d)
+{
+    // if not on node, kepp moving
+    if (!game_object_is_on_node(self))
+    {
+        game_object_move(self, self->direction);
+        return;
+    }
+
+    // dont enter ghost nest
+    if ((self->node->value == 1) && (d == DOWN))
+    {
+        return;
+    }
+
+    if (self->node->pellet)
+    {
+        if (self->node->super)
+        {
+            self->score += 200;
+            self->powerup = true;
+        }
+        else
+        {
+            self->score += 50;
+        }
+
+        self->node->pellet = false;
+    }
+
+    game_object_move(self, d);
+
+    self->powerup_steps++;
+
+    if (self->powerup_steps > self->powerup_steps_max)
+    {
+        self->powerup_steps = 0;
+        self->powerup = false;
+    }
 }
 
 

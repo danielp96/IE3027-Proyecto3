@@ -7,6 +7,8 @@ typedef struct Node
 {
     uint16_t x,y;
     uint8_t value; // to help navigation to ghost nest
+    bool pellet; // has pellet
+    bool super; // is pellet super pellet
     Node* up;
     Node* down;
     Node* left;
@@ -19,12 +21,14 @@ void node_link(Node** map, uint8_t id1, uint8_t id2);
 
 Node* map1_nodes[68];
 
-Node* node_new(uint16_t x, uint16_t y, uint8_t value)
+Node* node_new(uint16_t x, uint16_t y, uint8_t value, bool pellet, bool super)
 {
     Node* n = (Node*)malloc(sizeof(Node));
     n->x = x;
     n->y = y;
     n->value = value;
+    n->pellet = pellet;
+    n->super = super;
     n->up = NULL;
     n->down = NULL;
     n->left = NULL;
@@ -35,83 +39,83 @@ Node* node_new(uint16_t x, uint16_t y, uint8_t value)
 
 void map1_init()
 {
-    map1_nodes[ 0] = node_new(  4,  4, 6);
-    map1_nodes[ 1] = node_new( 44,  4, 6);
-    map1_nodes[ 2] = node_new( 68,  4, 7);
-    map1_nodes[ 3] = node_new(140,  4, 7);
-    map1_nodes[ 4] = node_new(164,  4, 6);
-    map1_nodes[ 5] = node_new(204,  4, 6);
+    map1_nodes[ 0] = node_new(  4,  4, 6, true, false);
+    map1_nodes[ 1] = node_new( 44,  4, 6, true, false);
+    map1_nodes[ 2] = node_new( 68,  4, 7, true, false);
+    map1_nodes[ 3] = node_new(140,  4, 7, true, false);
+    map1_nodes[ 4] = node_new(164,  4, 6, true, false);
+    map1_nodes[ 5] = node_new(204,  4, 6, true, false);
 
-    map1_nodes[ 6] = node_new(  4, 28, 5);
-    map1_nodes[ 7] = node_new( 20, 28, 4);
-    map1_nodes[ 8] = node_new( 44, 28, 5);
-    map1_nodes[ 9] = node_new( 68, 28, 6);
-    map1_nodes[10] = node_new( 92, 28, 5); 
-    map1_nodes[11] = node_new(116, 28, 5);
-    map1_nodes[12] = node_new(140, 28, 6);
-    map1_nodes[13] = node_new(164, 28, 5);
-    map1_nodes[14] = node_new(188, 28, 4);
-    map1_nodes[15] = node_new(204, 28, 5);
+    map1_nodes[ 6] = node_new(  4, 28, 5, true, true);
+    map1_nodes[ 7] = node_new( 20, 28, 4, true, false);
+    map1_nodes[ 8] = node_new( 44, 28, 5, true, false);
+    map1_nodes[ 9] = node_new( 68, 28, 6, true, false);
+    map1_nodes[10] = node_new( 92, 28, 5, true, false); 
+    map1_nodes[11] = node_new(116, 28, 5, true, false);
+    map1_nodes[12] = node_new(140, 28, 6, true, false);
+    map1_nodes[13] = node_new(164, 28, 5, true, false);
+    map1_nodes[14] = node_new(188, 28, 4, true, false);
+    map1_nodes[15] = node_new(204, 28, 5, true, true);
 
-    map1_nodes[16] = node_new( 44, 52, 4);
-    map1_nodes[17] = node_new( 68, 52, 3);
-    map1_nodes[18] = node_new( 92, 52, 4);
-    map1_nodes[19] = node_new(116, 52, 4);
-    map1_nodes[20] = node_new(140, 52, 3);
-    map1_nodes[21] = node_new(164, 52, 4);
+    map1_nodes[16] = node_new( 44, 52, 4, true, false);
+    map1_nodes[17] = node_new( 68, 52, 3, true, false);
+    map1_nodes[18] = node_new( 92, 52, 4, true, false);
+    map1_nodes[19] = node_new(116, 52, 4, true, false);
+    map1_nodes[20] = node_new(140, 52, 3, true, false);
+    map1_nodes[21] = node_new(164, 52, 4, true, false);
 
-    map1_nodes[22] = node_new( 20, 76, 3);
-    map1_nodes[23] = node_new( 68, 76, 2);
-    map1_nodes[24] = node_new(104, 76, 1);
-    map1_nodes[25] = node_new(140, 76, 2);
-    map1_nodes[26] = node_new(188, 76, 3);
+    map1_nodes[22] = node_new( 20, 76, 3, true, false);
+    map1_nodes[23] = node_new( 68, 76, 2, true, false);
+    map1_nodes[24] = node_new(104, 76, 1, true, false);
+    map1_nodes[25] = node_new(140, 76, 2, true, false);
+    map1_nodes[26] = node_new(188, 76, 3, true, false);
 
-    map1_nodes[27] = node_new( 44, 100, 4);
-    map1_nodes[28] = node_new( 68, 100, 3);
-    map1_nodes[29] = node_new( 88, 100, 0);
-    map1_nodes[30] = node_new(104, 100, 0);
-    map1_nodes[31] = node_new(120, 100, 0);
-    map1_nodes[32] = node_new(140, 100, 3);
-    map1_nodes[33] = node_new(164, 100, 4);
+    map1_nodes[27] = node_new( 44, 100, 4, true, false);
+    map1_nodes[28] = node_new( 68, 100, 3, true, false);
+    map1_nodes[29] = node_new( 88, 100, 0, false, false);
+    map1_nodes[30] = node_new(104, 100, 0, false, false);
+    map1_nodes[31] = node_new(120, 100, 0, false, false);
+    map1_nodes[32] = node_new(140, 100, 3, true, false);
+    map1_nodes[33] = node_new(164, 100, 4, true, false);
 
-    map1_nodes[34] = node_new( 20, 124, 6);
-    map1_nodes[35] = node_new( 44, 124, 5);
-    map1_nodes[36] = node_new( 68, 124, 4);
-    map1_nodes[37] = node_new( 92, 124, 5);
-    map1_nodes[38] = node_new(116, 124, 5);
-    map1_nodes[39] = node_new(140, 124, 4);
-    map1_nodes[40] = node_new(164, 124, 5);
-    map1_nodes[41] = node_new(188, 124, 6);
+    map1_nodes[34] = node_new( 20, 124, 6, true, false);
+    map1_nodes[35] = node_new( 44, 124, 5, true, false);
+    map1_nodes[36] = node_new( 68, 124, 4, true, false);
+    map1_nodes[37] = node_new( 92, 124, 5, false, false);
+    map1_nodes[38] = node_new(116, 124, 5, false, false);
+    map1_nodes[39] = node_new(140, 124, 4, true, false);
+    map1_nodes[40] = node_new(164, 124, 5, true, false);
+    map1_nodes[41] = node_new(188, 124, 6, true, false);
 
-    map1_nodes[42] = node_new( 20, 148, 5);
-    map1_nodes[43] = node_new( 68, 148, 6);
-    map1_nodes[44] = node_new( 92, 148, 6);
-    map1_nodes[45] = node_new(116, 148, 6);
-    map1_nodes[46] = node_new(140, 148, 6);
-    map1_nodes[47] = node_new(188, 148, 5);
+    map1_nodes[42] = node_new( 20, 148, 5, true, false);
+    map1_nodes[43] = node_new( 68, 148, 6, true, false);
+    map1_nodes[44] = node_new( 92, 148, 6, true, false);
+    map1_nodes[45] = node_new(116, 148, 6, true, false);
+    map1_nodes[46] = node_new(140, 148, 6, true, false);
+    map1_nodes[47] = node_new(188, 148, 5, true, false);
 
-    map1_nodes[48] = node_new(  4, 172, 7);
-    map1_nodes[49] = node_new( 20, 172, 6);
-    map1_nodes[50] = node_new( 44, 172, 7);
-    map1_nodes[51] = node_new( 68, 172, 7);
-    map1_nodes[52] = node_new( 92, 172, 8); 
-    map1_nodes[53] = node_new(116, 172, 8);
-    map1_nodes[54] = node_new(140, 172, 7);
-    map1_nodes[55] = node_new(164, 172, 7);
-    map1_nodes[56] = node_new(188, 172, 6);
-    map1_nodes[57] = node_new(204, 172, 7);
+    map1_nodes[48] = node_new(  4, 172, 7, true, true);
+    map1_nodes[49] = node_new( 20, 172, 6, true, false);
+    map1_nodes[50] = node_new( 44, 172, 7, true, false);
+    map1_nodes[51] = node_new( 68, 172, 7, true, false);
+    map1_nodes[52] = node_new( 92, 172, 8, true, false); 
+    map1_nodes[53] = node_new(116, 172, 8, true, false);
+    map1_nodes[54] = node_new(140, 172, 7, true, false);
+    map1_nodes[55] = node_new(164, 172, 7, true, false);
+    map1_nodes[56] = node_new(188, 172, 6, true, false);
+    map1_nodes[57] = node_new(204, 172, 7, true, true);
 
-    map1_nodes[58] = node_new( 68, 196, 10);
-    map1_nodes[59] = node_new( 92, 196, 9);
-    map1_nodes[60] = node_new(116, 196, 9);
-    map1_nodes[61] = node_new(140, 196, 10);
+    map1_nodes[58] = node_new( 68, 196, 10, true, false);
+    map1_nodes[59] = node_new( 92, 196, 9, true, false);
+    map1_nodes[60] = node_new(116, 196, 9, true, false);
+    map1_nodes[61] = node_new(140, 196, 10, true, false);
 
-    map1_nodes[62] = node_new(  4, 220, 8);
-    map1_nodes[63] = node_new( 44, 220, 8);
-    map1_nodes[64] = node_new( 68, 220, 9);
-    map1_nodes[65] = node_new(140, 220, 9);
-    map1_nodes[66] = node_new(164, 220, 8);
-    map1_nodes[67] = node_new(204, 220, 8);
+    map1_nodes[62] = node_new(  4, 220, 8, true, false);
+    map1_nodes[63] = node_new( 44, 220, 8, true, false);
+    map1_nodes[64] = node_new( 68, 220, 9, true, false);
+    map1_nodes[65] = node_new(140, 220, 9, true, false);
+    map1_nodes[66] = node_new(164, 220, 8, true, false);
+    map1_nodes[67] = node_new(204, 220, 8, true, false);
 
     node_link(map1_nodes,  0,  1);
     node_link(map1_nodes,  0,  6);

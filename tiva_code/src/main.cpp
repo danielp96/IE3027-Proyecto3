@@ -57,6 +57,8 @@ extern tImage eyes_down;
 extern tImage blue_1;
 extern tImage blue_2;
 
+extern tImage super_pellet;
+
 extern tImage test;
 
 game_object pacman;
@@ -74,11 +76,8 @@ tImage*  clyde_sprites[] = { &clyde_side_1,  &clyde_side_2,  &clyde_up_1,  &clyd
 tImage*   inky_sprites[] = {  &inky_side_1,   &inky_side_2,   &inky_up_1,   &inky_up_2,   &inky_down_1,   &inky_down_2, &eyes_side, &eyes_up, &eyes_down, &blue_1, &blue_2};
 tImage*  pinky_sprites[] = { &pinky_side_1,  &pinky_side_2,  &pinky_up_1,  &pinky_up_2,  &pinky_down_1,  &pinky_down_2, &eyes_side, &eyes_up, &eyes_down, &blue_1, &blue_2};
 
-
-void render(game_object* self);
 void render_game(void);
 void draw_sd_img(char* filename, uint16_t x, uint8_t y);
-
 
 void setup(void)
 {
@@ -109,21 +108,18 @@ void setup(void)
   
     map1_init();
 
-    game_object_init(&pacman, map1_nodes[58]->x, map1_nodes[58]->y, pacman_sprites);
+    game_object_init(&pacman, map1_nodes[37]->x, map1_nodes[37]->y, pacman_sprites);
     game_object_init(&blinky, map1_nodes[24]->x, map1_nodes[24]->y, blinky_sprites);
     game_object_init(&clyde , map1_nodes[31]->x, map1_nodes[31]->y,  clyde_sprites);
     game_object_init(&inky  , map1_nodes[29]->x, map1_nodes[29]->y,   inky_sprites);
     game_object_init(&pinky , map1_nodes[0]->x, map1_nodes[0]->y,  pinky_sprites);
 
 
-    game_object_set_node(&pacman, map1_nodes[58]);
+    game_object_set_node(&pacman, map1_nodes[37]);
     game_object_set_node(&blinky, map1_nodes[24]);
     game_object_set_node(&clyde , map1_nodes[31]);
     game_object_set_node(&inky  , map1_nodes[29]);
     game_object_set_node(&pinky , map1_nodes[0]);
-
-    pinky.dead = true;
-    inky.sick = true;
 
     //FillRect(0, 0, 319, 206, 0x421b);
     //String text1 = "Pacman!";
@@ -175,32 +171,47 @@ void loop(void)
 
     //hal_debug();
 
-    if (get_event(UP_1))
+    if (get_event(UP_1) && game_object_is_on_node(&pacman))
     {
-        game_object_move(&pacman, UP);
+        game_object_direction(&pacman, UP);
     }
 
-    if (get_event(DOWN_1))
+    if (get_event(DOWN_1) && game_object_is_on_node(&pacman))
     {
-        game_object_move(&pacman, DOWN);
+        game_object_direction(&pacman, DOWN);
     }
 
-    if (get_event(LEFT_1))
+    if (get_event(LEFT_1) && game_object_is_on_node(&pacman))
     {
-        game_object_move(&pacman, LEFT);
+        game_object_direction(&pacman, LEFT);
     }
 
-    if (get_event(RIGHT_1))
+    if (get_event(RIGHT_1) && game_object_is_on_node(&pacman))
     {
-        game_object_move(&pacman, RIGHT);
+        game_object_direction(&pacman, RIGHT);
     }
+
+    game_object_pacman_move(&pacman, pacman.direction);
 
     game_object_ghost_move(&blinky);
     game_object_ghost_move(&clyde);
     game_object_ghost_move(&inky);
     game_object_ghost_move(&pinky);
 
-    delay(5);
+    if (pacman.powerup)
+    {
+        blinky.sick = true;
+        clyde.sick  = true;
+        inky.sick   = true;
+        pinky.sick  = true;
+    }
+    else
+    {
+        blinky.sick = false;
+        clyde.sick  = false;
+        inky.sick   = false;
+        pinky.sick  = false;
+    }
 
     game_object_update_index(&pacman);
     game_object_update_index(&blinky);
@@ -210,17 +221,10 @@ void loop(void)
 
     render_game();
 
+    delay(2);
 }
 
-void render_game(void)
-{
-    for (int i = 0; i<5; i++)
-    {
-        render(object_list[i]);
-    }
-}
-
-void render(game_object* self)
+void render_game_object(game_object* self)
 {
     if (self->hidden)
     {
@@ -234,6 +238,36 @@ void render(game_object* self)
                 (uint8_t*)temp_sprite->data,
                 self->x_flip, self->y_flip);
 }
+
+void render_pellet(Node* n)
+{
+    if (!n->pellet)
+    {
+        return;
+    }
+
+    if (n->super)
+    {
+        LCD_Bitmap(n->x, n->y, super_pellet.w, super_pellet.h, super_pellet.data, false, false);
+        return;
+    }
+
+    FillRect(n->x+7, n->y+7, 2, 2, 0xFFFF);
+}
+
+void render_game(void)
+{
+    for (int i =0; i<68; i++)
+    {
+        render_pellet(map1_nodes[i]);
+    }
+
+    for (int i = 0; i<5; i++)
+    {
+        render_game_object(object_list[i]);
+    }
+}
+
 
 void draw_sd_img(char* filename, uint16_t x, uint8_t y)
 {
