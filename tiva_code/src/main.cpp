@@ -22,6 +22,41 @@ extern tImage pacman_up_2;
 extern tImage pacman_down_1;
 extern tImage pacman_down_2;
 
+extern tImage pacman_death_0;
+extern tImage pacman_death_1;
+extern tImage pacman_death_2;
+extern tImage pacman_death_3;
+extern tImage pacman_death_4;
+extern tImage pacman_death_5;
+extern tImage pacman_death_6;
+extern tImage pacman_death_7;
+extern tImage pacman_death_8;
+extern tImage pacman_death_9;
+extern tImage pacman_death_10;
+extern tImage pacman_death_11;
+extern tImage pacman_death_12;
+
+extern tImage greeny_side_1;
+extern tImage greeny_side_2;
+extern tImage greeny_up_1;
+extern tImage greeny_up_2;
+extern tImage greeny_down_1;
+extern tImage greeny_down_2;
+
+extern tImage greeny_death_0;
+extern tImage greeny_death_1;
+extern tImage greeny_death_2;
+extern tImage greeny_death_3;
+extern tImage greeny_death_4;
+extern tImage greeny_death_5;
+extern tImage greeny_death_6;
+extern tImage greeny_death_7;
+extern tImage greeny_death_8;
+extern tImage greeny_death_9;
+extern tImage greeny_death_10;
+extern tImage greeny_death_11;
+extern tImage greeny_death_12;
+
 extern tImage blinky_side_1;
 extern tImage blinky_side_2;
 extern tImage blinky_up_1;
@@ -62,22 +97,44 @@ extern tImage super_pellet;
 extern tImage test;
 
 game_object pacman;
+game_object greeny;
 game_object blinky;
 game_object clyde;
 game_object inky;
 game_object pinky;
 
+game_object pacman_live1;
+game_object pacman_live2;
+game_object pacman_live3;
+
+game_object greeny_live1;
+game_object greeny_live2;
+game_object greeny_live3;
+
+tImage* pacman_lives[] = {&pacman_side_1};
+tImage* greeny_lives[] = {&greeny_side_1};
+
 // list of objects for rendering
-game_object* object_list[] = {&pacman, &blinky, &clyde, &inky, &pinky};
+game_object* object_list[] = {&pacman, &greeny, &blinky, &clyde, &inky, &pinky};
+game_object* pacman_lives_list[] = { &pacman_live1, &pacman_live2, &pacman_live3};
+game_object* greeny_lives_list[] = { &greeny_live1, &greeny_live2, &greeny_live3};
 
 tImage* pacman_sprites[] = {&pacman_side_1, &pacman_side_2, &pacman_up_1, &pacman_up_2, &pacman_down_1, &pacman_down_2};
+tImage* greeny_sprites[] = {&greeny_side_1, &greeny_side_2, &greeny_up_1, &greeny_up_2, &greeny_down_1, &greeny_down_2};
 tImage* blinky_sprites[] = {&blinky_side_1, &blinky_side_2, &blinky_up_1, &blinky_up_2, &blinky_down_1, &blinky_down_2, &eyes_side, &eyes_up, &eyes_down, &blue_1, &blue_2};
 tImage*  clyde_sprites[] = { &clyde_side_1,  &clyde_side_2,  &clyde_up_1,  &clyde_up_2,  &clyde_down_1,  &clyde_down_2, &eyes_side, &eyes_up, &eyes_down, &blue_1, &blue_2};
 tImage*   inky_sprites[] = {  &inky_side_1,   &inky_side_2,   &inky_up_1,   &inky_up_2,   &inky_down_1,   &inky_down_2, &eyes_side, &eyes_up, &eyes_down, &blue_1, &blue_2};
 tImage*  pinky_sprites[] = { &pinky_side_1,  &pinky_side_2,  &pinky_up_1,  &pinky_up_2,  &pinky_down_1,  &pinky_down_2, &eyes_side, &eyes_up, &eyes_down, &blue_1, &blue_2};
 
+tImage* pacman_death_sprites[] = {&pacman_death_0, &pacman_death_1, &pacman_death_2, &pacman_death_3, &pacman_death_4, &pacman_death_5, &pacman_death_6, &pacman_death_7, &pacman_death_8, &pacman_death_9, &pacman_death_10, &pacman_death_11, &pacman_death_12};
+tImage* greeny_death_sprites[] = {&greeny_death_0, &greeny_death_1, &greeny_death_2, &greeny_death_3, &greeny_death_4, &greeny_death_5, &greeny_death_6, &greeny_death_7, &greeny_death_8, &greeny_death_9, &greeny_death_10, &greeny_death_11, &greeny_death_12};
+
 void render_game(void);
 void draw_sd_img(char* filename, uint16_t x, uint8_t y);
+void start_conditions(void);
+void play_death_anim(game_object* self, tImage* sprite_list[]);
+void render_score(game_object* self, uint16_t x, uint16_t y);
+
 
 void setup(void)
 {
@@ -109,20 +166,29 @@ void setup(void)
     map1_init();
 
     game_object_init(&pacman, map1_nodes[37]->x, map1_nodes[37]->y, pacman_sprites);
+    game_object_init(&greeny, map1_nodes[38]->x, map1_nodes[38]->y, greeny_sprites);
     game_object_init(&blinky, map1_nodes[24]->x, map1_nodes[24]->y, blinky_sprites);
     game_object_init(&clyde , map1_nodes[31]->x, map1_nodes[31]->y,  clyde_sprites);
     game_object_init(&inky  , map1_nodes[29]->x, map1_nodes[29]->y,   inky_sprites);
-    game_object_init(&pinky , map1_nodes[0]->x, map1_nodes[0]->y,  pinky_sprites);
+    game_object_init(&pinky , map1_nodes[30]->x, map1_nodes[30]->y,  pinky_sprites);
 
+    game_object_init(&pacman_live1, 250, 10, pacman_lives);
+    game_object_init(&pacman_live2, 265, 10, pacman_lives);
+    game_object_init(&pacman_live3, 280, 10, pacman_lives);
+
+    game_object_init(&greeny_live1, 250, 110, greeny_lives);
+    game_object_init(&greeny_live2, 265, 110, greeny_lives);
+    game_object_init(&greeny_live3, 280, 110, greeny_lives);
 
     game_object_set_node(&pacman, map1_nodes[37]);
+    game_object_set_node(&greeny, map1_nodes[38]);
     game_object_set_node(&blinky, map1_nodes[24]);
     game_object_set_node(&clyde , map1_nodes[31]);
     game_object_set_node(&inky  , map1_nodes[29]);
-    game_object_set_node(&pinky , map1_nodes[0]);
+    game_object_set_node(&pinky , map1_nodes[30]);
 
     //FillRect(0, 0, 319, 206, 0x421b);
-    //String text1 = "Pacman!";
+    //String text1 = "pacman!";
     //LCD_Print(text1, 20, 100, 2, 0xffff, 0x421b);
 
     //LCD_Sprite(50, 50, 100, 50, mario, 4, 1, 0, 0);
@@ -163,6 +229,7 @@ void setup(void)
     draw_sd_img((char*)"map1_8-2.txt",  56, 210);
     draw_sd_img((char*)"map1_8-3.txt", 112, 210);
     draw_sd_img((char*)"map1_8-4.txt", 168, 210);
+
 }
 
 void loop(void)
@@ -171,34 +238,63 @@ void loop(void)
 
     //hal_debug();
 
-    if (get_event(UP_1) && game_object_is_on_node(&pacman))
+    // pacman movement
+    if (game_object_is_on_node(&pacman))
     {
-        game_object_direction(&pacman, UP);
+        if (get_event(UP_1))
+        {
+            game_object_direction(&pacman, UP);
+        }
+
+        if (get_event(DOWN_1))
+        {
+            game_object_direction(&pacman, DOWN);
+        }
+
+        if (get_event(LEFT_1))
+        {
+            game_object_direction(&pacman, LEFT);
+        }
+
+        if (get_event(RIGHT_1))
+        {
+            game_object_direction(&pacman, RIGHT);
+        }
     }
 
-    if (get_event(DOWN_1) && game_object_is_on_node(&pacman))
+    // greeny movement
+    if (game_object_is_on_node(&greeny))
     {
-        game_object_direction(&pacman, DOWN);
-    }
+        if (get_event(UP_2))
+        {
+            game_object_direction(&greeny, UP);
+        }
 
-    if (get_event(LEFT_1) && game_object_is_on_node(&pacman))
-    {
-        game_object_direction(&pacman, LEFT);
-    }
+        if (get_event(DOWN_2))
+        {
+            game_object_direction(&greeny, DOWN);
+        }
 
-    if (get_event(RIGHT_1) && game_object_is_on_node(&pacman))
-    {
-        game_object_direction(&pacman, RIGHT);
+        if (get_event(LEFT_2))
+        {
+            game_object_direction(&greeny, LEFT);
+        }
+
+        if (get_event(RIGHT_2))
+        {
+            game_object_direction(&greeny, RIGHT);
+        }
     }
 
     game_object_pacman_move(&pacman, pacman.direction);
+    game_object_pacman_move(&greeny, greeny.direction);
 
     game_object_ghost_move(&blinky);
     game_object_ghost_move(&clyde);
     game_object_ghost_move(&inky);
     game_object_ghost_move(&pinky);
 
-    if (pacman.powerup)
+    if (pacman.powerup || greeny.powerup)
     {
         blinky.sick = true;
         clyde.sick  = true;
@@ -213,21 +309,74 @@ void loop(void)
         pinky.sick  = false;
     }
 
+    game_object_collision(&pacman, &blinky);
+    game_object_collision(&pacman, &clyde);
+    game_object_collision(&pacman, &inky);
+    game_object_collision(&pacman, &pinky);
+
+    game_object_collision(&greeny, &blinky);
+    game_object_collision(&greeny, &clyde);
+    game_object_collision(&greeny, &inky);
+    game_object_collision(&greeny, &pinky);
+
+
+    // dead logic
+    if (pacman.dead || greeny.dead)
+    {
+        if (pacman.dead)
+        {
+            play_death_anim(&pacman, pacman_death_sprites);
+        }
+        else
+        {
+            play_death_anim(&greeny, greeny_death_sprites);
+        }
+
+        pacman.dead = false;
+        greeny.dead = false;
+
+        for (int i = 0; i<6; i++)
+        {
+            FillRect(object_list[i]->x, object_list[i]->y, object_list[i]->w, object_list[i]->h, 0x0000);
+        }
+
+        start_conditions();
+    }
+
+    // pacman lives
+    
+
+    // greeny lives
+    if (greeny.lives < 3)
+    {
+        greeny_live3.hidden = true;
+    }
+
+    if (greeny.lives < 2)
+    {
+        greeny_live2.hidden = true;
+    }
+
+    if (greeny.lives < 1)
+    {
+        greeny_live1.hidden = true;
+    }
+
     game_object_update_index(&pacman);
+    game_object_update_index(&greeny);
     game_object_update_index(&blinky);
     game_object_update_index(&clyde);
     game_object_update_index(&inky);
     game_object_update_index(&pinky);
 
     render_game();
-
-    delay(2);
 }
 
 void render_game_object(game_object* self)
 {
     if (self->hidden)
     {
+        FillRect(self->x, self->y, self->w, self->h, 0x0000);
         return;
     }
 
@@ -243,6 +392,7 @@ void render_pellet(Node* n)
 {
     if (!n->pellet)
     {
+        FillRect(n->x+7, n->y+7, 2, 2, 0x0000);
         return;
     }
 
@@ -255,6 +405,51 @@ void render_pellet(Node* n)
     FillRect(n->x+7, n->y+7, 2, 2, 0xFFFF);
 }
 
+void render_lives(game_object* self, game_object* list[])
+{
+    if (self->old_lives == self->lives)
+    {
+        return;
+    }
+
+    self->old_lives = self->lives;
+
+    if (self->lives < 3)
+    {
+        list[2]->hidden = true;
+    }
+
+    if (self->lives < 2)
+    {
+        list[1]->hidden = true;
+    }
+
+    if (self->lives < 1)
+    {
+        list[0]->hidden = true;
+    }
+
+    for (int i = 0; i<3; i++)
+    {
+        render_game_object(list[i]);
+    }
+}
+
+void render_score(game_object* self, uint16_t x, uint16_t y)
+{
+    if (self->old_score == self->score)
+    {
+        return;
+    }
+
+    self->old_score = self->score;
+
+    char text[] = "00000";
+    sprintf(text, "%06i", self->score);
+
+    LCD_Print(text, x, y, 1, 0xffff, 0x0000);
+}
+
 void render_game(void)
 {
     for (int i =0; i<68; i++)
@@ -262,12 +457,17 @@ void render_game(void)
         render_pellet(map1_nodes[i]);
     }
 
-    for (int i = 0; i<5; i++)
+    for (int i = 0; i<6; i++)
     {
         render_game_object(object_list[i]);
     }
-}
 
+    render_score(&pacman, 250,  30);
+    render_score(&greeny, 250, 130);
+
+    render_lives(&pacman, pacman_lives_list);
+    render_lives(&greeny, greeny_lives_list);
+}
 
 void draw_sd_img(char* filename, uint16_t x, uint8_t y)
 {
@@ -302,3 +502,36 @@ void draw_sd_img(char* filename, uint16_t x, uint8_t y)
     free(temp_data);
 }
 
+void start_conditions()
+{
+    game_object_set_node(&pacman, map1_nodes[37]);
+    game_object_set_pos( &pacman, map1_nodes[37]->x, map1_nodes[37]->y);
+
+    game_object_set_node(&greeny, map1_nodes[38]);
+    game_object_set_pos( &greeny, map1_nodes[38]->x, map1_nodes[38]->y);
+
+    game_object_set_node(&blinky, map1_nodes[24]);
+    game_object_set_pos( &blinky, map1_nodes[24]->x, map1_nodes[24]->y);
+
+    game_object_set_node(&clyde, map1_nodes[31]);
+    game_object_set_pos( &clyde, map1_nodes[31]->x, map1_nodes[31]->y);
+
+    game_object_set_node(&inky, map1_nodes[29]);
+    game_object_set_pos( &inky, map1_nodes[29]->x, map1_nodes[29]->y);
+
+    game_object_set_node(&pinky, map1_nodes[30]);
+    game_object_set_pos( &pinky, map1_nodes[30]->x, map1_nodes[30]->y);
+}
+
+void play_death_anim(game_object* self, tImage* sprite_list[])
+{
+    for (int i = 0; i<13; i++)
+    {
+        tImage* temp_sprite = sprite_list[i];
+        LCD_Bitmap(self->x, self->y,
+                   temp_sprite->w, temp_sprite->h,
+                   (uint8_t*)temp_sprite->data,
+                    false, false);
+        delay(100);
+    }
+}

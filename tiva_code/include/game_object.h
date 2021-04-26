@@ -32,8 +32,10 @@ typedef struct
     uint16_t max_y, min_y;
 
     uint16_t score;
+    uint16_t old_score;
 
-    uint8_t lifes;
+    uint8_t lives;
+    uint8_t old_lives;
 
     bool enable_x, enable_y;
 
@@ -95,10 +97,12 @@ void game_object_init(game_object* self, uint16_t x, uint16_t y, tImage* sprite_
     self->dead_steps = 0;
     self->dead_steps_max = 60;
     self->powerup_steps = 0;
-    self->powerup_steps_max = 1000;
+    self->powerup_steps_max = 80;
 
     self->score = 0;
-    self->lifes = 3;
+    self->lives = 3;
+    self->old_score = -1;
+    self->old_lives = -1;
 
     self->node = NULL;
 }
@@ -139,6 +143,12 @@ void game_object_add_y(game_object* self, int8_t y, uint16_t max, uint16_t min)
     }
 
     self->y = temp;
+}
+
+void game_object_set_pos(game_object* self, uint16_t x, uint16_t y)
+{
+    self->x = x;
+    self->y = y;
 }
 
 void game_object_set_sprite(game_object* self, SpriteID id, bool x_flip, bool y_flip)
@@ -509,5 +519,24 @@ void game_object_pacman_move(game_object* self, Direction d)
     }
 }
 
+void game_object_collision(game_object* player, game_object* ghost)
+{
+    uint8_t delta_x = abs(player->x - ghost->x);
+    uint8_t delta_y = abs(player->y - ghost->y);
+
+    if ((delta_x < 5) && (delta_y < 5))
+    {
+        if (player->powerup)
+        {
+            player->score += 500;
+            ghost->dead = true;
+        }
+        else
+        {
+            player->lives--;
+            player->dead = true;
+        }
+    }
+}
 
 #endif // __GAME_OBJECT__
