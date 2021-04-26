@@ -92,6 +92,8 @@ extern tImage eyes_down;
 extern tImage blue_1;
 extern tImage blue_2;
 
+extern tImage pacoman;
+
 extern tImage super_pellet;
 
 extern tImage test;
@@ -129,11 +131,23 @@ tImage*  pinky_sprites[] = { &pinky_side_1,  &pinky_side_2,  &pinky_up_1,  &pink
 tImage* pacman_death_sprites[] = {&pacman_death_0, &pacman_death_1, &pacman_death_2, &pacman_death_3, &pacman_death_4, &pacman_death_5, &pacman_death_6, &pacman_death_7, &pacman_death_8, &pacman_death_9, &pacman_death_10, &pacman_death_11, &pacman_death_12};
 tImage* greeny_death_sprites[] = {&greeny_death_0, &greeny_death_1, &greeny_death_2, &greeny_death_3, &greeny_death_4, &greeny_death_5, &greeny_death_6, &greeny_death_7, &greeny_death_8, &greeny_death_9, &greeny_death_10, &greeny_death_11, &greeny_death_12};
 
+Node* dead_node;
+
+bool _2player = false;
+bool background = true; // should we draw the background? for efficiency purposes
+
+uint8_t state = 0;
+uint8_t pellet_counter = 0;
+
 void render_game(void);
 void draw_sd_img(char* filename, uint16_t x, uint8_t y);
-void start_conditions(void);
+void start_conditions(bool _2player);
 void play_death_anim(game_object* self, tImage* sprite_list[]);
 void render_score(game_object* self, uint16_t x, uint16_t y);
+void draw_background(void);
+void game_menu(void);
+void game_play(void);
+void game_over(void);
 
 
 void setup(void)
@@ -165,6 +179,8 @@ void setup(void)
   
     map1_init();
 
+    dead_node = node_new(300, 220, 0, false, false);
+
     game_object_init(&pacman, map1_nodes[37]->x, map1_nodes[37]->y, pacman_sprites);
     game_object_init(&greeny, map1_nodes[38]->x, map1_nodes[38]->y, greeny_sprites);
     game_object_init(&blinky, map1_nodes[24]->x, map1_nodes[24]->y, blinky_sprites);
@@ -187,56 +203,66 @@ void setup(void)
     game_object_set_node(&inky  , map1_nodes[29]);
     game_object_set_node(&pinky , map1_nodes[30]);
 
-    //FillRect(0, 0, 319, 206, 0x421b);
-    //String text1 = "pacman!";
-    //LCD_Print(text1, 20, 100, 2, 0xffff, 0x421b);
-
-    //LCD_Sprite(50, 50, 100, 50, mario, 4, 1, 0, 0);
-    
-    //LCD_Bitmap(50, 50, 100, 100, mario);
-    //LCD_Bitmap(0, 0, 320, 240, fondo);
-
-    // cast because compiler warning
-    draw_sd_img((char*)"map1_1-1.txt",   0,   0);
-    draw_sd_img((char*)"map1_1-2.txt",  56,   0);
-    draw_sd_img((char*)"map1_1-3.txt", 112,   0);
-    draw_sd_img((char*)"map1_1-4.txt", 168,   0);
-    draw_sd_img((char*)"map1_2-1.txt",   0,  30);
-    draw_sd_img((char*)"map1_2-2.txt",  56,  30);
-    draw_sd_img((char*)"map1_2-3.txt", 112,  30);
-    draw_sd_img((char*)"map1_2-4.txt", 168,  30);
-    draw_sd_img((char*)"map1_3-1.txt",   0,  60);
-    draw_sd_img((char*)"map1_3-2.txt",  56,  60);
-    draw_sd_img((char*)"map1_3-3.txt", 112,  60);
-    draw_sd_img((char*)"map1_3-4.txt", 168,  60);
-    draw_sd_img((char*)"map1_4-1.txt",   0,  90);
-    draw_sd_img((char*)"map1_4-2.txt",  56,  90);
-    draw_sd_img((char*)"map1_4-3.txt", 112,  90);
-    draw_sd_img((char*)"map1_4-4.txt", 168,  90);
-    draw_sd_img((char*)"map1_5-1.txt",   0, 120);
-    draw_sd_img((char*)"map1_5-2.txt",  56, 120);
-    draw_sd_img((char*)"map1_5-3.txt", 112, 120);
-    draw_sd_img((char*)"map1_5-4.txt", 168, 120);
-    draw_sd_img((char*)"map1_6-1.txt",   0, 150);
-    draw_sd_img((char*)"map1_6-2.txt",  56, 150);
-    draw_sd_img((char*)"map1_6-3.txt", 112, 150);
-    draw_sd_img((char*)"map1_6-4.txt", 168, 150);
-    draw_sd_img((char*)"map1_7-1.txt",   0, 180);
-    draw_sd_img((char*)"map1_7-2.txt",  56, 180);
-    draw_sd_img((char*)"map1_7-3.txt", 112, 180);
-    draw_sd_img((char*)"map1_7-4.txt", 168, 180);
-    draw_sd_img((char*)"map1_8-1.txt",   0, 210);
-    draw_sd_img((char*)"map1_8-2.txt",  56, 210);
-    draw_sd_img((char*)"map1_8-3.txt", 112, 210);
-    draw_sd_img((char*)"map1_8-4.txt", 168, 210);
-
 }
 
 void loop(void)
 {
     read_inputs();
 
-    //hal_debug();
+    switch (state)
+    {
+        case 0:
+            game_menu();
+            break;
+
+        case 1:
+            game_play();
+            break;
+
+        case 2:
+            game_over();
+            break;
+    }
+
+}
+
+void game_menu(void)
+{
+    LCD_Bitmap(0, 0, 320, 240, pacoman.data, false, false);
+
+    LCD_Print("SW1: PLAYER 1", 114, 162, 1, 0xffff, 0x0000);
+    LCD_Print("SW2: PLAYER 2", 114, 172, 1, 0xffff, 0x0000);
+
+    while (true)
+    {
+        read_inputs();
+
+        if (get_event(SW1))
+        {
+            _2player = false;
+            break;
+        }
+
+        if (get_event(SW2))
+        {
+            _2player = true;
+            break;
+        }
+    }
+
+    LCD_Clear(0x0000);
+
+    start_conditions(_2player);
+
+    state = 1;
+}
+
+void game_play(void)
+{
+    if (background)
+    {
+        draw_background();
+    }
 
     // pacman movement
     if (game_object_is_on_node(&pacman))
@@ -314,10 +340,13 @@ void loop(void)
     game_object_collision(&pacman, &inky);
     game_object_collision(&pacman, &pinky);
 
-    game_object_collision(&greeny, &blinky);
-    game_object_collision(&greeny, &clyde);
-    game_object_collision(&greeny, &inky);
-    game_object_collision(&greeny, &pinky);
+    if (_2player)
+    {
+        game_object_collision(&greeny, &blinky);
+        game_object_collision(&greeny, &clyde);
+        game_object_collision(&greeny, &inky);
+        game_object_collision(&greeny, &pinky);
+    }
 
 
     // dead logic
@@ -327,7 +356,8 @@ void loop(void)
         {
             play_death_anim(&pacman, pacman_death_sprites);
         }
-        else
+
+        if (greeny.dead)
         {
             play_death_anim(&greeny, greeny_death_sprites);
         }
@@ -340,26 +370,31 @@ void loop(void)
             FillRect(object_list[i]->x, object_list[i]->y, object_list[i]->w, object_list[i]->h, 0x0000);
         }
 
-        start_conditions();
-    }
+        start_conditions(_2player);
 
-    // pacman lives
-    
+        if (pacman.lives == 0)
+        {
+            pacman.hidden = true;
+            game_object_set_node(&pacman, dead_node);
+            game_object_set_pos(&pacman, dead_node->x, dead_node->y);
+        }
 
-    // greeny lives
-    if (greeny.lives < 3)
-    {
-        greeny_live3.hidden = true;
-    }
+        if (greeny.lives == 0)
+        {
+            greeny.hidden = true;
+            game_object_set_node(&greeny, dead_node);
+            game_object_set_pos(&greeny, dead_node->x, dead_node->y);
+        }
 
-    if (greeny.lives < 2)
-    {
-        greeny_live2.hidden = true;
-    }
+        if ((pacman.lives == 0) && (greeny.lives == 0))
+        {
+            state = 2;
+        }
 
-    if (greeny.lives < 1)
-    {
-        greeny_live1.hidden = true;
+        if ((pacman.lives == 0) && !_2player)
+        {
+            state = 2;
+        }
     }
 
     game_object_update_index(&pacman);
@@ -370,6 +405,57 @@ void loop(void)
     game_object_update_index(&pinky);
 
     render_game();
+
+    if (pellet_counter == 68)
+    {
+        state = 2;
+    }
+
+    pellet_counter = 0;
+}
+
+void game_over(void)
+{
+    LCD_Clear(0x00);
+
+    if (_2player)
+    {
+        if ((pacman.lives == 0) && (greeny.lives == 0))
+        {
+            LCD_Print("YOU DIED", 126, 100, 1, 0xffff, 0x0000);
+
+        }
+        else
+        {
+            LCD_Print("YOU WON", 130, 40, 1, 0xffff, 0x0000); 
+
+            LCD_Print("P1: ", 120, 100, 1, 0xffff, 0x0000);
+            LCD_Print("P2: ", 120, 120, 1, 0xffff, 0x0000);
+
+            pacman.old_score = 0; // hack, do not touch
+            greeny.old_score = 0; // hack, do not touch
+            render_score(&pacman, 146, 100);
+            render_score(&greeny, 146, 120);
+        }
+    }
+    else
+    {
+        if (pacman.lives == 0)
+        {
+            LCD_Print("YOU DIED", 126, 100, 1, 0xffff, 0x0000);
+
+        }
+        else
+        {
+            LCD_Print("YOU WON", 130, 90, 1, 0xffff, 0x0000); 
+
+        }
+
+        pacman.old_score = 0; // hack, do not touch
+        render_score(&pacman, 134, 120);
+    }
+
+    while (true);
 }
 
 void render_game_object(game_object* self)
@@ -393,6 +479,8 @@ void render_pellet(Node* n)
     if (!n->pellet)
     {
         FillRect(n->x+7, n->y+7, 2, 2, 0x0000);
+
+        pellet_counter++;
         return;
     }
 
@@ -463,10 +551,13 @@ void render_game(void)
     }
 
     render_score(&pacman, 250,  30);
-    render_score(&greeny, 250, 130);
-
     render_lives(&pacman, pacman_lives_list);
-    render_lives(&greeny, greeny_lives_list);
+
+    if (_2player)
+    {
+        render_score(&greeny, 250, 130);
+        render_lives(&greeny, greeny_lives_list);
+    }
 }
 
 void draw_sd_img(char* filename, uint16_t x, uint8_t y)
@@ -502,13 +593,22 @@ void draw_sd_img(char* filename, uint16_t x, uint8_t y)
     free(temp_data);
 }
 
-void start_conditions()
+void start_conditions(bool _2player)
 {
     game_object_set_node(&pacman, map1_nodes[37]);
     game_object_set_pos( &pacman, map1_nodes[37]->x, map1_nodes[37]->y);
 
-    game_object_set_node(&greeny, map1_nodes[38]);
-    game_object_set_pos( &greeny, map1_nodes[38]->x, map1_nodes[38]->y);
+    if (_2player)
+    {
+        game_object_set_node(&greeny, map1_nodes[38]);
+        game_object_set_pos( &greeny, map1_nodes[38]->x, map1_nodes[38]->y);
+    }
+    else
+    {
+        greeny.hidden = true;
+        game_object_set_node(&greeny, dead_node);
+        game_object_set_pos(&greeny, dead_node->x, dead_node->y);
+    }
 
     game_object_set_node(&blinky, map1_nodes[24]);
     game_object_set_pos( &blinky, map1_nodes[24]->x, map1_nodes[24]->y);
@@ -534,4 +634,44 @@ void play_death_anim(game_object* self, tImage* sprite_list[])
                     false, false);
         delay(100);
     }
+}
+
+void draw_background(void)
+{
+
+    // cast because compiler warning
+    draw_sd_img((char*)"map1_1-1.txt",   0,   0);
+    draw_sd_img((char*)"map1_1-2.txt",  56,   0);
+    draw_sd_img((char*)"map1_1-3.txt", 112,   0);
+    draw_sd_img((char*)"map1_1-4.txt", 168,   0);
+    draw_sd_img((char*)"map1_2-1.txt",   0,  30);
+    draw_sd_img((char*)"map1_2-2.txt",  56,  30);
+    draw_sd_img((char*)"map1_2-3.txt", 112,  30);
+    draw_sd_img((char*)"map1_2-4.txt", 168,  30);
+    draw_sd_img((char*)"map1_3-1.txt",   0,  60);
+    draw_sd_img((char*)"map1_3-2.txt",  56,  60);
+    draw_sd_img((char*)"map1_3-3.txt", 112,  60);
+    draw_sd_img((char*)"map1_3-4.txt", 168,  60);
+    draw_sd_img((char*)"map1_4-1.txt",   0,  90);
+    draw_sd_img((char*)"map1_4-2.txt",  56,  90);
+    draw_sd_img((char*)"map1_4-3.txt", 112,  90);
+    draw_sd_img((char*)"map1_4-4.txt", 168,  90);
+    draw_sd_img((char*)"map1_5-1.txt",   0, 120);
+    draw_sd_img((char*)"map1_5-2.txt",  56, 120);
+    draw_sd_img((char*)"map1_5-3.txt", 112, 120);
+    draw_sd_img((char*)"map1_5-4.txt", 168, 120);
+    draw_sd_img((char*)"map1_6-1.txt",   0, 150);
+    draw_sd_img((char*)"map1_6-2.txt",  56, 150);
+    draw_sd_img((char*)"map1_6-3.txt", 112, 150);
+    draw_sd_img((char*)"map1_6-4.txt", 168, 150);
+    draw_sd_img((char*)"map1_7-1.txt",   0, 180);
+    draw_sd_img((char*)"map1_7-2.txt",  56, 180);
+    draw_sd_img((char*)"map1_7-3.txt", 112, 180);
+    draw_sd_img((char*)"map1_7-4.txt", 168, 180);
+    draw_sd_img((char*)"map1_8-1.txt",   0, 210);
+    draw_sd_img((char*)"map1_8-2.txt",  56, 210);
+    draw_sd_img((char*)"map1_8-3.txt", 112, 210);
+    draw_sd_img((char*)"map1_8-4.txt", 168, 210);
+
+    background = false;
 }
