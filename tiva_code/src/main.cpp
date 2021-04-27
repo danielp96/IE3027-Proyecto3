@@ -228,7 +228,45 @@ void loop(void)
 
 void game_menu(void)
 {
-    LCD_Bitmap(0, 0, 320, 240, pacoman.data, false, false);
+    draw_sd_img((char*)"intro_clyde.txt",   0,   0);
+    draw_sd_img((char*)"intro_clyde.txt", 160,   0);
+    draw_sd_img((char*)"intro_clyde.txt", 280,  40);
+    draw_sd_img((char*)"intro_clyde.txt", 280, 200);
+    draw_sd_img((char*)"intro_clyde.txt", 120, 200);
+    draw_sd_img((char*)"intro_clyde.txt",   0, 160);
+
+    draw_sd_img((char*)"intro_inky.txt",  40,   0);
+    draw_sd_img((char*)"intro_inky.txt", 200,   0);
+    draw_sd_img((char*)"intro_inky.txt", 280,  80);
+    draw_sd_img((char*)"intro_inky.txt", 240, 200);
+    draw_sd_img((char*)"intro_inky.txt",  80, 200);
+    draw_sd_img((char*)"intro_inky.txt",   0, 120);
+
+    draw_sd_img((char*)"intro_pinky.txt",  80,   0);
+    draw_sd_img((char*)"intro_pinky.txt", 240,   0);
+    draw_sd_img((char*)"intro_pinky.txt", 280, 120);
+    draw_sd_img((char*)"intro_pinky.txt", 200, 200);
+    draw_sd_img((char*)"intro_pinky.txt",  40, 200);
+    draw_sd_img((char*)"intro_pinky.txt",   0,  80);
+
+    draw_sd_img((char*)"intro_blinky.txt", 120,   0);
+    draw_sd_img((char*)"intro_blinky.txt", 280,   0);
+    draw_sd_img((char*)"intro_blinky.txt", 280, 160);
+    draw_sd_img((char*)"intro_blinky.txt", 160, 200);
+    draw_sd_img((char*)"intro_blinky.txt",   0, 200);
+    draw_sd_img((char*)"intro_blinky.txt",   0,  40);
+
+    draw_sd_img((char*)"intro_title_1.txt",  40,  40);
+    draw_sd_img((char*)"intro_title_2.txt",  40,  80);
+    draw_sd_img((char*)"intro_title_3.txt",  40, 120);
+    draw_sd_img((char*)"intro_title_4.txt",  40, 160);
+    draw_sd_img((char*)"intro_title_5.txt",  40, 200);
+    draw_sd_img((char*)"intro_title_6.txt",  40, 240);
+
+    draw_sd_img((char*)"intro_paco_1_1.txt", 120,  80);
+    draw_sd_img((char*)"intro_paco_1_2.txt", 160,  80);
+    draw_sd_img((char*)"intro_paco_2_1.txt", 120, 120);
+    draw_sd_img((char*)"intro_paco_2_2.txt", 160, 120);
 
     LCD_Print("SW1: PLAYER 1", 114, 162, 1, 0xffff, 0x0000);
     LCD_Print("SW2: PLAYER 2", 114, 172, 1, 0xffff, 0x0000);
