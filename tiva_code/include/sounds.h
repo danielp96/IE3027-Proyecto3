@@ -63,21 +63,6 @@ int death_durations[] =
     80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 80, 125, 
     80, 125, 125, 125, 125
 };
-        
-void setup()
-{
-
-}
-
-void play_sound (int notes[], int durations[], int sizenotes)
-{
-    const int totalNotes = sizenotes / sizeof(int);
-
-    for (int i = 0; i < totalNotes; i++)
-    {
-        play_note(notes, durations, i, 1);
-    }
-}
 
 void play_note(int notes[], int durations[], unsigned int index, float speed)
 {
@@ -93,6 +78,16 @@ void play_note(int notes[], int durations[], unsigned int index, float speed)
     }
     
     delay(wait);
+}
+
+void play_sound (int notes[], int durations[], int sizenotes)
+{
+    const int totalNotes = sizenotes / sizeof(int);
+
+    for (int i = 0; i < totalNotes; i++)
+    {
+        play_note(notes, durations, i, 1);
+    }
 }
 
 // void loop()

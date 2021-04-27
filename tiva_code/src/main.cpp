@@ -11,6 +11,7 @@
 #include "hal.h"
 #include "game_object.h"
 #include "map.h"
+#include "sounds.h"
 
 #define LCD_WIDTH  320
 #define LCD_HEIGHT 240
@@ -92,8 +93,6 @@ extern tImage eyes_down;
 extern tImage blue_1;
 extern tImage blue_2;
 
-extern tImage pacoman;
-
 extern tImage super_pellet;
 
 extern tImage test;
@@ -139,6 +138,9 @@ bool background = true; // should we draw the background? for efficiency purpose
 uint8_t state = 0;
 uint8_t pellet_counter = 0;
 
+int paco_note_index = 0;
+const int paco_totalNotes = sizeof(paco_notes) / sizeof(int);
+
 void render_game(void);
 void draw_sd_img(char* filename, uint16_t x, uint8_t y);
 void start_conditions(bool _2player);
@@ -172,6 +174,8 @@ void setup(void)
     pinMode(A3, INPUT); // dont connect anything here
     randomSeed(analogRead(A3));
 
+    pinMode(PD_7, OUTPUT);
+
     input_init();
     
     LCD_Init();
@@ -202,7 +206,6 @@ void setup(void)
     game_object_set_node(&clyde , map1_nodes[31]);
     game_object_set_node(&inky  , map1_nodes[29]);
     game_object_set_node(&pinky , map1_nodes[30]);
-
 }
 
 void loop(void)
@@ -223,53 +226,56 @@ void loop(void)
             game_over();
             break;
     }
-
 }
 
 void game_menu(void)
 {
-    draw_sd_img((char*)"intro_clyde.txt",   0,   0);
-    draw_sd_img((char*)"intro_clyde.txt", 160,   0);
-    draw_sd_img((char*)"intro_clyde.txt", 280,  40);
-    draw_sd_img((char*)"intro_clyde.txt", 280, 200);
-    draw_sd_img((char*)"intro_clyde.txt", 120, 200);
-    draw_sd_img((char*)"intro_clyde.txt",   0, 160);
+    draw_sd_img((char*)"clyde.txt",   0,   0);
+    draw_sd_img((char*)"clyde.txt", 160,   0);
+    draw_sd_img((char*)"clyde.txt", 280,  40);
+    draw_sd_img((char*)"clyde.txt", 280, 200);
+    draw_sd_img((char*)"clyde.txt", 120, 200);
+    draw_sd_img((char*)"clyde.txt",   0, 160);
 
-    draw_sd_img((char*)"intro_inky.txt",  40,   0);
-    draw_sd_img((char*)"intro_inky.txt", 200,   0);
-    draw_sd_img((char*)"intro_inky.txt", 280,  80);
-    draw_sd_img((char*)"intro_inky.txt", 240, 200);
-    draw_sd_img((char*)"intro_inky.txt",  80, 200);
-    draw_sd_img((char*)"intro_inky.txt",   0, 120);
+    draw_sd_img((char*)"inky.txt",  40,   0);
+    draw_sd_img((char*)"inky.txt", 200,   0);
+    draw_sd_img((char*)"inky.txt", 280,  80);
+    draw_sd_img((char*)"inky.txt", 240, 200);
+    draw_sd_img((char*)"inky.txt",  80, 200);
+    draw_sd_img((char*)"inky.txt",   0, 120);
 
-    draw_sd_img((char*)"intro_pinky.txt",  80,   0);
-    draw_sd_img((char*)"intro_pinky.txt", 240,   0);
-    draw_sd_img((char*)"intro_pinky.txt", 280, 120);
-    draw_sd_img((char*)"intro_pinky.txt", 200, 200);
-    draw_sd_img((char*)"intro_pinky.txt",  40, 200);
-    draw_sd_img((char*)"intro_pinky.txt",   0,  80);
+    draw_sd_img((char*)"pinky.txt",  80,   0);
+    draw_sd_img((char*)"pinky.txt", 240,   0);
+    draw_sd_img((char*)"pinky.txt", 280, 120);
+    draw_sd_img((char*)"pinky.txt", 200, 200);
+    draw_sd_img((char*)"pinky.txt",  40, 200);
+    draw_sd_img((char*)"pinky.txt",   0,  80);
 
-    draw_sd_img((char*)"intro_blinky.txt", 120,   0);
-    draw_sd_img((char*)"intro_blinky.txt", 280,   0);
-    draw_sd_img((char*)"intro_blinky.txt", 280, 160);
-    draw_sd_img((char*)"intro_blinky.txt", 160, 200);
-    draw_sd_img((char*)"intro_blinky.txt",   0, 200);
-    draw_sd_img((char*)"intro_blinky.txt",   0,  40);
+    draw_sd_img((char*)"blinky.txt", 120,   0);
+    draw_sd_img((char*)"blinky.txt", 280,   0);
+    draw_sd_img((char*)"blinky.txt", 280, 160);
+    draw_sd_img((char*)"blinky.txt", 160, 200);
+    draw_sd_img((char*)"blinky.txt",   0, 200);
+    draw_sd_img((char*)"blinky.txt",   0,  40);
 
-    draw_sd_img((char*)"intro_title_1.txt",  40,  40);
-    draw_sd_img((char*)"intro_title_2.txt",  40,  80);
-    draw_sd_img((char*)"intro_title_3.txt",  40, 120);
-    draw_sd_img((char*)"intro_title_4.txt",  40, 160);
-    draw_sd_img((char*)"intro_title_5.txt",  40, 200);
-    draw_sd_img((char*)"intro_title_6.txt",  40, 240);
+    draw_sd_img((char*)"title_1.txt",  40,  40);
+    draw_sd_img((char*)"title_2.txt",  80,  40);
+    draw_sd_img((char*)"title_3.txt", 120,  40);
+    draw_sd_img((char*)"title_4.txt", 160,  40);
+    draw_sd_img((char*)"title_5.txt", 200,  40);
+    draw_sd_img((char*)"title_6.txt", 240,  40);
 
-    draw_sd_img((char*)"intro_paco_1_1.txt", 120,  80);
-    draw_sd_img((char*)"intro_paco_1_2.txt", 160,  80);
-    draw_sd_img((char*)"intro_paco_2_1.txt", 120, 120);
-    draw_sd_img((char*)"intro_paco_2_2.txt", 160, 120);
+    draw_sd_img((char*)"paco_1_1.txt", 120,  80);
+    draw_sd_img((char*)"paco_1_2.txt", 160,  80);
+    draw_sd_img((char*)"paco_2_1.txt", 120, 120);
+    draw_sd_img((char*)"paco_2_2.txt", 160, 120);
 
     LCD_Print("SW1: PLAYER 1", 114, 162, 1, 0xffff, 0x0000);
     LCD_Print("SW2: PLAYER 2", 114, 172, 1, 0xffff, 0x0000);
+
+
+    int intro_note_index = 0;
+    const int intro_totalNotes = sizeof(intro_notes) / sizeof(int);
 
     while (true)
     {
@@ -286,6 +292,10 @@ void game_menu(void)
             _2player = true;
             break;
         }
+
+        play_note(intro_notes, intro_durations, intro_note_index % intro_totalNotes, 1);
+
+        intro_note_index++;
     }
 
     LCD_Clear(0x0000);
@@ -450,6 +460,10 @@ void game_play(void)
     }
 
     pellet_counter = 0;
+
+    play_note(paco_notes, paco_durations, paco_note_index % paco_totalNotes, 4);
+
+    paco_note_index++;
 }
 
 void game_over(void)
@@ -600,11 +614,15 @@ void render_game(void)
 
 void draw_sd_img(char* filename, uint16_t x, uint8_t y)
 {
+    Serial.print(filename);
+    Serial.print(": ");
+    Serial.println(SD.exists(filename));
+
     File file = SD.open(filename);
 
     // read file contents
     char data[file.size()];
-    file.read(data, file.size()+1);
+    file.read(data, file.size());
     file.close();
 
     // delimiters
@@ -670,7 +688,13 @@ void play_death_anim(game_object* self, tImage* sprite_list[])
                    temp_sprite->w, temp_sprite->h,
                    (uint8_t*)temp_sprite->data,
                     false, false);
-        delay(100);
+
+        play_note(death_notes, death_durations, i, 1);
+    }
+
+    for (int i = 0; i<4; i++)
+    {
+        play_note(death_notes, death_durations, i+13, 1);
     }
 }
 
