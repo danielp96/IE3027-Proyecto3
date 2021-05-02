@@ -1,4 +1,4 @@
-#include <Arduino.h>
+#include <Arduino.h> // platformio specific
 
 #include <stdlib.h>
 #include <string.h>
@@ -692,6 +692,7 @@ void play_death_anim(game_object* self, tImage* sprite_list[])
         play_note(death_notes, death_durations, i, 1);
     }
 
+    // play last notes
     for (int i = 0; i<4; i++)
     {
         play_note(death_notes, death_durations, i+13, 1);

@@ -510,12 +510,16 @@ void game_object_pacman_move(game_object* self, Direction d)
 
     game_object_move(self, d);
 
-    self->powerup_steps++;
 
-    if (self->powerup_steps > self->powerup_steps_max)
+    if (self->powerup)
     {
-        self->powerup_steps = 0;
-        self->powerup = false;
+        self->powerup_steps++;
+    
+        if (self->powerup_steps > self->powerup_steps_max)
+        {
+            self->powerup_steps = 0;
+            self->powerup = false;
+        }
     }
 }
 

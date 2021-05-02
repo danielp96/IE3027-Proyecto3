@@ -16,9 +16,6 @@ typedef struct Node
 
 } Node;
 
-
-void node_link(Node** map, uint8_t id1, uint8_t id2);
-
 Node* map1_nodes[68];
 
 Node* node_new(uint16_t x, uint16_t y, uint8_t value, bool pellet, bool super)
@@ -35,6 +32,40 @@ Node* node_new(uint16_t x, uint16_t y, uint8_t value, bool pellet, bool super)
     n->right = NULL;
 
     return n;
+}
+
+void node_link(Node** map, uint8_t id1, uint8_t id2)
+{
+    Node* n1 = map[id1];
+    Node* n2 = map[id2];
+
+    if (n1->x == n2->x)
+    {
+        if (n1->y < n2->y)
+        {
+            n1->down = n2;
+            n2->up = n1;
+        }
+        else
+        {
+            n2->down = n1;
+            n1->up = n2;
+        }
+    }
+
+    if (n1->y == n2->y)
+    {
+        if (n1->x < n2->x)
+        {
+            n1->right = n2;
+            n2->left = n1;
+        }
+        else
+        {
+            n2->left = n1;
+            n1->right = n2;
+        }
+    }
 }
 
 void map1_init()
@@ -215,40 +246,6 @@ void map1_init()
     //Serial.println("");
     //Serial.print(" N0.right: ");
     //Serial.print((uint32_t)(map1_nodes[ 0]->right), HEX);
-}
-
-void node_link(Node** map, uint8_t id1, uint8_t id2)
-{
-    Node* n1 = map[id1];
-    Node* n2 = map[id2];
-
-    if (n1->x == n2->x)
-    {
-        if (n1->y < n2->y)
-        {
-            n1->down = n2;
-            n2->up = n1;
-        }
-        else
-        {
-            n2->down = n1;
-            n1->up = n2;
-        }
-    }
-
-    if (n1->y == n2->y)
-    {
-        if (n1->x < n2->x)
-        {
-            n1->right = n2;
-            n2->left = n1;
-        }
-        else
-        {
-            n2->left = n1;
-            n1->right = n2;
-        }
-    }
 }
 
 void map_debug_draw(Node** map)
